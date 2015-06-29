@@ -7,7 +7,9 @@ install:
   - pip install myhdl 
 
 # command to run tests
-script: nosetests
+script: 
+  - nosetests
+  - ./scripts/run_all_examples.sh
 
 notifications:
   email: false
