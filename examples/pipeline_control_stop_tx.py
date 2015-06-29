@@ -1,5 +1,5 @@
 from myhdl import *
-from mylib import pipeline_control
+from myhdl_lib.pipeline_control import pipeline_control
 
 
 
@@ -23,7 +23,6 @@ def arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat):
             Each stage is implemented as a separate process controlled by a central pipeline control unit via an enable signal
             The pipeline control unit manages the handshake and synchronizes the operation of the stages
     '''
-
 
     DATA_WIDTH = len(rx_dat)
 
@@ -86,7 +85,7 @@ def arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat):
     def stage_2():
         ''' Divide by 4'''
         if (stage_en[2]):
-            s2_dat.next = s1_sum >> 2
+            s2_dat.next = s1_sum // 4
 
 
     @always_comb
@@ -180,8 +179,8 @@ def pipeline_control_stop_tx():
 
     clkgen = clock_generator(clk, 10)
     rstgen = reset_generator(rst, clk)
-#     dut = arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
-    dut = traceSignals(arithmetic_mean4, rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
+    dut = arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
+#     dut = traceSignals(arithmetic_mean4, rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
     drv = Driver(rst, clk, rx_rdy, rx_vld, rx_dat)
     cap = Capture(rst, clk, tx_rdy, tx_vld, tx_dat)
 
@@ -222,7 +221,8 @@ def pipeline_control_stop_tx():
     print "data_in ({}): {}".format(len(data_in), data_in)
     print "data_out ({}): {}".format(len(data_out), data_out)
 
-
+    data_out_expected = [sum(data_in[i:i+4])//4 for i in range(0, len(data_in), 4)]
+    assert cmp(data_out_expected, data_out)==0, "expected: data_out ({}): {}".format(len(data_out_expected), data_out_expected)
 
 if __name__ == '__main__':
     pipeline_control_stop_tx()

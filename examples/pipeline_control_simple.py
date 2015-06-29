@@ -196,6 +196,10 @@ def pipeline_control_simple():
     print "data_in ({}): {}".format(len(data_in), data_in)
     print "data_out ({}): {}".format(len(data_out), data_out)
 
+    data_out_expected = [-d for d in data_in]
+    assert cmp(data_out_expected, data_out)==0, "expected: data_out ({}): {}".format(len(data_out_expected), data_out_expected)
+
+
 
 if __name__ == '__main__':
     pipeline_control_simple()
