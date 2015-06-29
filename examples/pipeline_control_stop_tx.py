@@ -4,7 +4,7 @@ from myhdl_lib.pipeline_control import pipeline_control
 
 
 def arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat):
-    ''' Calculates the arithmetic mean of every 4 numbers consecutive
+    ''' Calculates the arithmetic mean of every 4 consecutive input numbers
 
         Input handshake & data
             rx_rdy - (o) Ready
