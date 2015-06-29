@@ -9,6 +9,8 @@ install:
 # command to run tests
 script: 
   - nosetests
+  - pwd
+  - echo $PYTHONPATH
   - ./scripts/run_all_examples.sh
 
 notifications:
