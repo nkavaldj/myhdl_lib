@@ -26,6 +26,10 @@ def clock_generator(clk, PERIOD):
 
 class TestFifo(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.simulators = ["myhdl", "icarus"]
+
     def setUp(self):
         DATA_RANGE_MIN = 0
         DATA_RANGE_MAX = 128
@@ -104,7 +108,7 @@ class TestFifo(unittest.TestCase):
 
     def testEmptyFull(self):
         ''' FIFO: Empty and Full, up and down'''
-        DEPTH = [1, 2, 4, 7, 8, 9, 10, 100]
+        DEPTH = [1, 2, 4, 7, 8, 9, 10]
 
         def stim(DEPTH):
             @instance
@@ -143,7 +147,7 @@ class TestFifo(unittest.TestCase):
 
         getDut = sim.DUTer()
 
-        for s in ["myhdl", "icarus"]:
+        for s in self.simulators:
             getDut.selectSimulator(s)
             for dpt in DEPTH:
     #             dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
@@ -169,12 +173,12 @@ class TestFifo(unittest.TestCase):
                             )
                 stm = stim(dpt)
                 Simulation(self.clkgen, dut, stm).run()
-                del dut
+                del dut, stm
 
 
     def testEmptyFull1(self):
         ''' FIFO: Empty and Full, circular (simultaneous Write and Read) '''
-        DEPTH = [2, 4, 7, 8, 9, 10, 100]
+        DEPTH = [2, 4, 7, 8, 9, 10]
 
         def stim(DEPTH):
             @instance
@@ -221,10 +225,34 @@ class TestFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+#                 dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
+                dut = getDut(fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=self.din,
+                              empty=self.empty,
+                              re=self.re,
+                              dout=self.dout,
+                              afull=None,
+                              aempty=None,
+                              count=self.count,
+                              afull_th=None,
+                              aempty_th=None,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt,
+                              width=None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testCount(self):
@@ -271,15 +299,38 @@ class TestFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+#                 dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
+                dut = getDut(fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=self.din,
+                              empty=self.empty,
+                              re=self.re,
+                              dout=self.dout,
+                              afull=None,
+                              aempty=None,
+                              count=self.count,
+                              afull_th=None,
+                              aempty_th=None,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt, width=None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testOverflowUnderflow(self):
         ''' FIFO: Overflow and Underflow '''
-        DEPTH = [1, 2, 4, 7, 8, 9, 10, 100]
+        DEPTH = [1, 2, 4, 7, 8, 9, 10]
 
         def stim(DEPTH):
             @instance
@@ -354,15 +405,39 @@ class TestFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+#                 dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
+                dut = getDut(fifo,
+                             rst=self.rst,
+                             clk=self.clk,
+                             full=self.full,
+                             we=self.we,
+                             din=self.din,
+                             empty=self.empty,
+                             re=self.re,
+                             dout=self.dout,
+                             afull=None,
+                             aempty=None,
+                             count=self.count,
+                             afull_th=None,
+                             aempty_th=None,
+                             ovf=self.ovf,
+                             udf=self.udf,
+                             count_max=self.count_max,
+                             depth=dpt,
+                             width=None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testAlmostEmptyAlmostFullDefaultThreshold(self):
         ''' FIFO: AlmostEmpty and AlmostFull with default thresholds '''
-        DEPTH = [1, 2, 4, 7, 8, 9, 10, 100]
+        DEPTH = [1, 2, 4, 7, 8, 9, 10]
 
         def stim(DEPTH):
             DEFAULTH_THRESHOLD = DEPTH//2
@@ -403,15 +478,38 @@ class TestFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                dut = getDut(fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=self.din,
+                              empty=self.empty,
+                              re=self.re,
+                              dout=self.dout,
+                              afull=self.afull,
+                              aempty=self.aempty,
+                              count=self.count,
+                              afull_th=None,
+                              aempty_th=None,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt,
+                              width=None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testAlmostEmptyAlmostFullConfigureThreshold(self):
         ''' FIFO: AlmostEmpty and AlmostFull with programmed thresholds '''
-        DEPTH = [2, 4, 7, 8, 9, 10, 100]
+        DEPTH = [2, 4, 7, 8, 9, 10]
 
         def stim(DEPTH):
             @instance
@@ -456,10 +554,32 @@ class TestFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=self.afull_th, aempty_th=self.aempty_th, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                dut = getDut(fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=self.din,
+                              empty=self.empty,
+                              re=self.re,
+                              dout=self.dout,
+                              afull=self.afull,
+                              aempty=self.aempty,
+                              count=self.count,
+                              afull_th=self.afull_th,
+                              aempty_th=self.aempty_th,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt,
+                              width=None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
 
 
 
