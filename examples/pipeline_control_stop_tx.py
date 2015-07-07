@@ -8,11 +8,11 @@ def arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat):
 
         Input handshake & data
             rx_rdy - (o) Ready
-            rx_vla - (i) Valid
+            rx_vld - (i) Valid
             rx_dat - (i) Data
         Output handshake & data
             tx_rdy - (i) Ready
-            tx_vla - (o) Valid
+            tx_vld - (o) Valid
             tx_dat - (o) Data
 
         Implementation: 3-stage pipeline

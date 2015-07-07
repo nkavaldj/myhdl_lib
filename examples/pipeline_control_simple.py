@@ -7,17 +7,17 @@ def twos_complement(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat):
     ''' Two's complement conversion of a binary number
         Input handshake & data
             rx_rdy - (o) Ready
-            rx_vla - (i) Valid
+            rx_vld - (i) Valid
             rx_dat - (i) Data
         Output handshake & data
             tx_rdy - (i) Ready
-            tx_vla - (o) Valid
+            tx_vld - (o) Valid
             tx_dat - (o) Data
 
         Implementation: 3-stage pipeline
             stage 0: registers input data
-            stage 1: inverts data coming from stage 0 and registers them
-            stage 2: increments data coming from stage 1 and registers them
+            stage 1: inverts data coming from stage 0 and registers the inverted data
+            stage 2: increments data coming from stage 1 and registers the incremented data
 
             Each stage is implemented as a separate process controlled by a central pipeline control unit via an enable signal
             The pipeline control unit manages the handshake and synchronizes the operation of the stages
