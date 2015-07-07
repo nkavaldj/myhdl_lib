@@ -1,8 +1,10 @@
 import unittest
 import itertools
+import os
 
 from myhdl import *
 from myhdl_lib.fifo import fifo
+import myhdl_lib.simulation as sim
 
 def reset_generator(rst, clk, RST_LENGTH_CC=10):
     @instance
@@ -19,6 +21,8 @@ def clock_generator(clk, PERIOD):
     def _clkgen():
         clk.next = not clk
     return _clkgen
+
+
 
 class TestFifo(unittest.TestCase):
 
@@ -137,10 +141,35 @@ class TestFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in ["myhdl", "icarus"]:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+    #             dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
+                dut = getDut( fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=self.din,
+                              empty=self.empty,
+                              re=self.re,
+                              dout=self.dout,
+                              afull=None,
+                              aempty=None,
+                              count=self.count,
+                              afull_th=None,
+                              aempty_th=None,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt,
+                              width=None
+                            )
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut
 
 
     def testEmptyFull1(self):
@@ -437,3 +466,4 @@ class TestFifo(unittest.TestCase):
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testFifo']
     unittest.main()
+
