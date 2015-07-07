@@ -9,7 +9,6 @@ before_install:
 install:
   - pip install myhdl 
   - ./scripts/make_vpi.sh
-  - ls -la
   
 # command to run tests
 script: 
