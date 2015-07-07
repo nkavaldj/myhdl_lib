@@ -83,39 +83,46 @@ def fifo(rst, clk, full, we, din, empty, re, dout, afull=None, aempty=None, aful
     #===========================================================================
     ''' Count '''
     if (count != None) or (count_max != None) or (afull != None) or (aempty != None):
-        if (count == None):
-            count = Signal(intbv(0, min=0, max=depth+1))
-        assert count.max > depth
-
+        count_r = Signal(intbv(0, min=0, max=depth+1))
         count_new  = Signal(intbv(0, min=-1, max=depth+2))
+
+        if (count != None):
+            assert count.max > depth
+            @always_comb
+            def count_out():
+                count.next = count_r
 
         @always_comb
         def count_comb():
             if   (we_safe and not re_safe):
-                    count_new.next = count + 1
+                    count_new.next = count_r + 1
             elif (not we_safe and re_safe):
-                    count_new.next = count - 1
+                    count_new.next = count_r - 1
             else:
-                    count_new.next = count
+                    count_new.next = count_r
 
         @always(clk.posedge)
         def count_proc():
             if (rst):
-                count.next = 0
+                count_r.next = 0
             else:
-                count.next = count_new
+                count_r.next = count_new
 
     ''' Count max '''
     if (count_max != None):
         assert count_max.max > depth
+        count_max_r = Signal(intbv(0, min=0,max=count_max.max))
         @always(clk.posedge)
         def count_max_proc():
             if (rst):
-                count_max.next = 0
+                count_max_r.next = 0
             else:
-                if (count_max < count_new):
-                    count_max.next = count_new
+                if (count_max_r < count_new):
+                    count_max_r.next = count_new
 
+        @always_comb
+        def count_max_out():
+            count_max.next = count_max_r
 
     #===========================================================================
     # AlmostFull, AlmostEmpty
