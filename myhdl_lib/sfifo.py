@@ -38,7 +38,6 @@ def sfifo(rst, clk, full, we, din, empty, re, dout, wr_commit=None, wr_discard=N
         count_max  (o) - max number of occupied fifo cells reached since the last reset
         ovf        (o) - overflow flag, set at the first write in a full fifo, cleared at reset
         udf        (o) - underflow flag, set at the first read from an empty fifo, cleared at reset
-        #
     """
 
     if (width == None):
@@ -68,8 +67,10 @@ def sfifo(rst, clk, full, we, din, empty, re, dout, wr_commit=None, wr_discard=N
     # Almost full/empty and their thresholds
     afull_flg       = Signal(bool(0))
     aempty_flg      = Signal(bool(0))
-    afull_th        = afull_th  if (afull_th  != None) else Signal(intbv(depth / 2, min=0, max=depth))
-    aempty_th       = aempty_th if (aempty_th != None) else Signal(intbv(depth / 2, min=0, max=depth))
+    if (afull_th == None):
+        afull_th = depth//2
+    if (aempty_th == None):
+        aempty_th = depth//2
 
     afull           = afull  if (afull  != None) else Signal(bool(0))
     aempty          = aempty if (aempty != None) else Signal(bool(0))
@@ -80,9 +81,7 @@ def sfifo(rst, clk, full, we, din, empty, re, dout, wr_commit=None, wr_discard=N
     count_max       = count_max if (count_max != None) else Signal(intbv(0, min=0, max=depth+1))
 
     rd_ptr          = Signal(intbv(0, min=0, max=depth))
-    rd_ptr_new      = Signal(intbv(0, min=0, max=depth))
     wr_ptr          = Signal(intbv(0, min=0, max=depth))
-    wr_ptr_new      = Signal(intbv(0, min=0, max=depth))
     srd_ptr         = Signal(intbv(0, min=0, max=depth))
     srd_ptr_new     = Signal(intbv(0, min=0, max=depth))
     swr_ptr         = Signal(intbv(0, min=0, max=depth))
@@ -135,19 +134,6 @@ def sfifo(rst, clk, full, we, din, empty, re, dout, wr_commit=None, wr_discard=N
             srd_ptr_new.next     = ((srd_ptr + 1) % depth)
         else:
             srd_ptr_new.next     = srd_ptr
-
-    @always_comb
-    def ptrs_new():
-        """ Next value for the pointers """
-        if (wr_commit):
-            wr_ptr_new.next = swr_ptr_new
-        else:
-            wr_ptr_new.next = wr_ptr
-        #
-        if (rd_commit):
-            rd_ptr_new.next = srd_ptr_new
-        else:
-            rd_ptr_new.next = rd_ptr
 
     @always(clk.posedge)
     def state_main():
