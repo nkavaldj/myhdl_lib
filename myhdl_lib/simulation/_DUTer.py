@@ -6,7 +6,10 @@ from myhdl import toVerilog, toVHDL, Cosimulation, traceSignals
 
 
 class DUTer(object):
-    '''  '''
+    ''' Returns a simulation instance of a MyHDL function, intended as a DUT in testbench
+        The user selects a simulator: MyHDL, or co-simulation with external HDL simulator, e.g. icarus
+        The user selects whether traces are generated or not
+    '''
 
 
     def __init__(self):
@@ -112,7 +115,7 @@ class DUTer(object):
 
     def _getDut(self, func, **kwargs):
         ''' Returns a simulation instance of func. 
-            Uses the _simulator specified by self._simulator. 
+            Uses the simulator specified by self._simulator. 
             Enables traces if self._trace is True
                 func - MyHDL function to be simulated
                 kwargs - dict of func interface assignments: for signals and parameters
