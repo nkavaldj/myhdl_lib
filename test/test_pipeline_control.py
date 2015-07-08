@@ -2,6 +2,7 @@ import unittest
 
 from myhdl import *
 from myhdl_lib.pipeline_control import pipeline_control
+import myhdl_lib.simulation as sim
 
 def clock_generator(clk, PERIOD):
     @always(delay(PERIOD//2))
@@ -11,6 +12,9 @@ def clock_generator(clk, PERIOD):
 
 class TestPipelineControl(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        cls.simulators = ["myhdl", "icarus"]
 
     def setUp(self):
         self.rst = ResetSignal(val=0, active=1, async=False)
@@ -82,15 +86,28 @@ class TestPipelineControl(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.stop_rx = Signal(intbv(0)[dpt:])
-            self.stop_tx = Signal(intbv(0)[dpt:])
+        getDut = sim.DUTer()
 
-            self.en = Signal(intbv(0)[dpt:])
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.stop_rx = Signal(intbv(0)[dpt:])
+                self.stop_tx = Signal(intbv(0)[dpt:])
+                self.en = Signal(intbv(0)[dpt:])
 
-            dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=None, stop_tx=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+                dut = getDut( pipeline_control,
+                              rst = self.rst,
+                              clk = self.clk,
+                              rx_rdy = self.rx_rdy,
+                              rx_vld = self.rx_vld,
+                              tx_rdy = self.tx_rdy,
+                              tx_vld = self.tx_vld,
+                              stage_enable = self.en,
+                              stop_rx = None,
+                              stop_tx = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testContinuousWrite(self):
@@ -126,15 +143,28 @@ class TestPipelineControl(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.stop_rx = Signal(intbv(0)[dpt:])
-            self.stop_tx = Signal(intbv(0)[dpt:])
+        getDut = sim.DUTer()
 
-            self.en = Signal(intbv(0)[dpt:])
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.stop_rx = Signal(intbv(0)[dpt:])
+                self.stop_tx = Signal(intbv(0)[dpt:])
+                self.en = Signal(intbv(0)[dpt:])
 
-            dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=None, stop_tx=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+                dut = getDut( pipeline_control,
+                              rst = self.rst,
+                              clk = self.clk,
+                              rx_rdy = self.rx_rdy,
+                              rx_vld = self.rx_vld,
+                              tx_rdy = self.tx_rdy,
+                              tx_vld = self.tx_vld,
+                              stage_enable = self.en,
+                              stop_rx = None,
+                              stop_tx = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testStopRX(self):
@@ -174,15 +204,29 @@ class TestPipelineControl(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.stop_rx = Signal(intbv(0)[dpt:])
-            self.stop_tx = Signal(intbv(0)[dpt:])
+        getDut = sim.DUTer()
 
-            self.en = Signal(intbv(0)[dpt:])
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.stop_rx = Signal(intbv(0)[dpt:])
+                self.stop_tx = Signal(intbv(0)[dpt:])
+                self.en = Signal(intbv(0)[dpt:])
 
-            dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=self.stop_rx, stop_tx=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+#                 dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=self.stop_rx, stop_tx=None)
+                dut = getDut( pipeline_control,
+                              rst = self.rst,
+                              clk = self.clk,
+                              rx_rdy = self.rx_rdy,
+                              rx_vld = self.rx_vld,
+                              tx_rdy = self.tx_rdy,
+                              tx_vld = self.tx_vld,
+                              stage_enable = self.en,
+                              stop_rx = self.stop_rx,
+                              stop_tx = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testStopTX(self):
@@ -229,15 +273,29 @@ class TestPipelineControl(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.stop_rx = Signal(intbv(0)[dpt:])
-            self.stop_tx = Signal(intbv(0)[dpt:])
+        getDut = sim.DUTer()
 
-            self.en = Signal(intbv(0)[dpt:])
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.stop_rx = Signal(intbv(0)[dpt:])
+                self.stop_tx = Signal(intbv(0)[dpt:])
+                self.en = Signal(intbv(0)[dpt:])
 
-            dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=None, stop_tx=self.stop_tx)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+#                 dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=None, stop_tx=self.stop_tx)
+                dut = getDut( pipeline_control,
+                              rst = self.rst,
+                              clk = self.clk,
+                              rx_rdy = self.rx_rdy,
+                              rx_vld = self.rx_vld,
+                              tx_rdy = self.tx_rdy,
+                              tx_vld = self.tx_vld,
+                              stage_enable = self.en,
+                              stop_rx = None,
+                              stop_tx = self.stop_tx)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
 
