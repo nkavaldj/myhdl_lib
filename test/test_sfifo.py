@@ -4,6 +4,7 @@ import itertools
 from myhdl import *
 from myhdl_lib.sfifo import sfifo
 from myhdl_lib import sfifo_beh
+import myhdl_lib.simulation as sim
 
 def clock_generator(clk, PERIOD):
     @always(delay(PERIOD//2))
@@ -17,6 +18,10 @@ class TestSFifo(unittest.TestCase):
     COMMIT = 0
     DISCARD = 1
     DISCARD_COMMIT = 2
+
+    @classmethod
+    def setUpClass(cls):
+        cls.simulators = ["myhdl", "icarus"]
 
     def setUp(self):
         DATA_RANGE_MIN = 0
@@ -47,7 +52,6 @@ class TestSFifo(unittest.TestCase):
         self.rst = ResetSignal(val=0, active=1, async=False)
         self.clk = Signal(bool(0))
         self.clkgen = clock_generator(self.clk, PERIOD=10)
-
 
 
     def tearDown(self):
@@ -159,11 +163,38 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteThenReadCommitAtTheLastOperation(self):
@@ -199,11 +230,38 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteThenReadCommitAfterTheLastOperation(self):
@@ -236,11 +294,38 @@ class TestSFifo(unittest.TestCase):
             return _inst
 
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteAndReadCommitAtEveryOperation(self):
@@ -269,11 +354,38 @@ class TestSFifo(unittest.TestCase):
             return _inst
 
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteAndReadCommitAtTheLastOperation(self):
@@ -305,11 +417,39 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteAndReadCommitAfterTheLastOperation(self):
@@ -346,11 +486,38 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteThenReadDiscardAtEveryOperation(self):
@@ -386,11 +553,38 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteThenReadDiscardAtTheLastOperation(self):
@@ -442,11 +636,38 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
     def testWriteThenReadDiscardAfterTheLastOperation(self):
@@ -490,12 +711,38 @@ class TestSFifo(unittest.TestCase):
                 raise StopSimulation
             return _inst
 
+        getDut = sim.DUTer()
 
-        for dpt in DEPTH:
-            self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-            dut = sfifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, wr_commit=self.wr_commit, wr_discard=self.wr_discard, rd_commit=self.rd_commit, rd_discard=self.rd_discard, afull=self.afull, aempty=self.aempty, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
-            stm = stim(dpt)
-            Simulation(self.clkgen, dut, stm).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
+                dut = getDut( sfifo,
+                              rst = self.rst,
+                              clk = self.clk,
+                              full = self.full,
+                              we = self.we,
+                              din = self.din,
+                              empty = self.empty,
+                              re = self.re,
+                              dout = self.dout,
+                              wr_commit = self.wr_commit,
+                              wr_discard = self.wr_discard,
+                              rd_commit = self.rd_commit,
+                              rd_discard = self.rd_discard,
+                              afull = self.afull,
+                              aempty = self.aempty,
+                              count = self.count,
+                              afull_th = None,
+                              aempty_th = None,
+                              ovf = self.ovf,
+                              udf = self.udf,
+                              count_max = self.count_max,
+                              depth = dpt,
+                              width = None)
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
 
 
 
