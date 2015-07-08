@@ -3,6 +3,7 @@ import random
 
 from myhdl import *
 from myhdl_lib.mem import rom, ram_sp_rf, ram_sp_wf, ram_sp_ar,ram_sdp_rf, ram_sdp_wf, ram_sdp_ar, ram_dp_rf, ram_dp_wf, ram_dp_ar
+import myhdl_lib.simulation as sim
 
 def mem_fill(clk, we, addr, di, content):
     for a, d in enumerate(content):
@@ -45,7 +46,11 @@ def clock_generator(clk, PERIOD):
     return _clkgen
 
 
-class Test(unittest.TestCase):
+class TestMem(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.simulators = ["myhdl", "icarus"]
 
     def testRom(self):
         ''' ROM '''
@@ -57,17 +62,28 @@ class Test(unittest.TestCase):
         dout = Signal(intbv(0, min=DATA_RANGE_MIN, max=DATA_RANGE_MAX+1))
         CONTENT = tuple([random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)])
 
-        dut = rom(addr, dout, CONTENT)
-
-        @instance
         def stim():
-            for a in range(ADDR_MAX):
-                addr.next = a
+            @instance
+            def _inst():
                 yield delay(1)
-                assert CONTENT[a]==dout
-            raise StopSimulation
+                addr.next = addr.max-1
+                yield delay(10)
+                for a in range(ADDR_MAX):
+                    addr.next = a
+                    yield delay(1)
+                    assert CONTENT[a]==dout, "At addr {}: expected {}, detected {}".format(a, CONTENT[a], dout)
+                raise StopSimulation
+            return _inst
 
-        Simulation(dut, stim).run()
+
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            stm = stim()
+            dut = getDut(rom, addr=addr, dout=dout, CONTENT=CONTENT)
+            Simulation(dut, stm).run()
+            del dut, stm
 
 
     def testRamSpRf(self):
@@ -86,18 +102,25 @@ class Test(unittest.TestCase):
         clk = Signal(bool(0))
         clkgen = clock_generator(clk, PERIOD=10)
 
-        dut = ram_sp_rf(clk, we, addr, di, do)
-
-        @instance
         def stim():
-            yield clk.posedge
-            yield mem_fill(clk, we, addr, di, CONTENT[0])
-            yield mem_verify(clk, addr, do, CONTENT[0])
-            for i in range(1,len(CONTENT)):
-                yield mem_write_and_read(clk, we, addr, addr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clk.posedge
+                yield mem_fill(clk, we, addr, di, CONTENT[0])
+                yield mem_verify(clk, addr, do, CONTENT[0])
+                for i in range(1,len(CONTENT)):
+                    yield mem_write_and_read(clk, we, addr, addr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
+                raise StopSimulation
+            return _inst
 
-        Simulation(clkgen, dut, stim).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_sp_rf, clk=clk, we=we, addr=addr, di=di, do=do)
+            stm = stim()
+            Simulation(clkgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamSpWf(self):
@@ -116,18 +139,25 @@ class Test(unittest.TestCase):
         clk = Signal(bool(0))
         clkgen = clock_generator(clk, PERIOD=10)
 
-        dut = ram_sp_wf(clk, we, addr, di, do)
-
-        @instance
         def stim():
-            yield clk.posedge
-            yield mem_fill(clk, we, addr, di, CONTENT[0])
-            yield mem_verify(clk, addr, do, CONTENT[0])
-            for i in range(1,len(CONTENT)):
-                yield mem_write_and_read(clk, we, addr, addr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i])
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clk.posedge
+                yield mem_fill(clk, we, addr, di, CONTENT[0])
+                yield mem_verify(clk, addr, do, CONTENT[0])
+                for i in range(1,len(CONTENT)):
+                    yield mem_write_and_read(clk, we, addr, addr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i])
+                raise StopSimulation
+            return _inst
 
-        Simulation(clkgen, dut, stim).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_sp_wf, clk=clk, we=we, addr=addr, di=di, do=do)
+            stm = stim()
+            Simulation(clkgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamSpAr(self):
@@ -146,18 +176,25 @@ class Test(unittest.TestCase):
         clk = Signal(bool(0))
         clkgen = clock_generator(clk, PERIOD=10)
 
-        dut = ram_sp_ar(clk, we, addr, di, do)
-
-        @instance
         def stim():
-            yield clk.posedge
-            yield mem_fill(clk, we, addr, di, CONTENT[0])
-            yield mem_verify(clk, addr, do, CONTENT[0], ASYNC_RD=True)
-            for i in range(1,len(CONTENT)):
-                yield mem_write_and_read(clk, we, addr, addr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clk.posedge
+                yield mem_fill(clk, we, addr, di, CONTENT[0])
+                yield mem_verify(clk, addr, do, CONTENT[0], ASYNC_RD=True)
+                for i in range(1,len(CONTENT)):
+                    yield mem_write_and_read(clk, we, addr, addr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
+                raise StopSimulation
+            return _inst
 
-        Simulation(clkgen, dut, stim).run()
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_sp_ar, clk=clk, we=we, addr=addr, di=di, do=do)
+            stm = stim()
+            Simulation(clkgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamSdpRf(self):
@@ -177,18 +214,25 @@ class Test(unittest.TestCase):
         clk = Signal(bool(0))
         clkgen = clock_generator(clk, PERIOD=10)
 
-        @instance
         def stim():
-            yield clk.posedge
-            yield mem_fill(clk, we, addrw, di, CONTENT[0])
-            yield mem_verify(clk, addrr, do, CONTENT[0])
-            for i in range(1,len(CONTENT)):
-                yield mem_write_and_read(clk, we, addrw, addrr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clk.posedge
+                yield mem_fill(clk, we, addrw, di, CONTENT[0])
+                yield mem_verify(clk, addrr, do, CONTENT[0])
+                for i in range(1,len(CONTENT)):
+                    yield mem_write_and_read(clk, we, addrw, addrr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
+                raise StopSimulation
+            return _inst
 
-        dut = ram_sdp_rf(clk, we, addrw, addrr, di, do)
+        getDut = sim.DUTer()
 
-        Simulation(clkgen, dut, stim).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_sdp_rf, clk=clk, we=we, addrw=addrw, addrr=addrr, di=di, do=do)
+            stm = stim()
+            Simulation(clkgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamSdpWf(self):
@@ -208,18 +252,25 @@ class Test(unittest.TestCase):
         clk = Signal(bool(0))
         clkgen = clock_generator(clk, PERIOD=10)
 
-        @instance
         def stim():
-            yield clk.posedge
-            yield mem_fill(clk, we, addrw, di, CONTENT[0])
-            yield mem_verify(clk, addrr, do, CONTENT[0])
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clk, we, addrw, addrr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i])
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clk.posedge
+                yield mem_fill(clk, we, addrw, di, CONTENT[0])
+                yield mem_verify(clk, addrr, do, CONTENT[0])
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clk, we, addrw, addrr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i])
+                raise StopSimulation
+            return _inst
 
-        dut = ram_sdp_wf(clk, we, addrw, addrr, di, do)
+        getDut = sim.DUTer()
 
-        Simulation(clkgen, dut, stim).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_sdp_wf, clk=clk, we=we, addrw=addrw, addrr=addrr, di=di, do=do)
+            stm = stim()
+            Simulation(clkgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamSdpAr(self):
@@ -239,18 +290,25 @@ class Test(unittest.TestCase):
         clk = Signal(bool(0))
         clkgen = clock_generator(clk, PERIOD=10)
 
-        @instance
         def stim():
-            yield clk.posedge
-            yield mem_fill(clk, we, addrw, di, CONTENT[0])
-            yield mem_verify(clk, addrr, do, CONTENT[0], ASYNC_RD=True)
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clk, we, addrw, addrr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clk.posedge
+                yield mem_fill(clk, we, addrw, di, CONTENT[0])
+                yield mem_verify(clk, addrr, do, CONTENT[0], ASYNC_RD=True)
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clk, we, addrw, addrr, di, do, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
+                raise StopSimulation
+            return _inst
 
-        dut = ram_sdp_ar(clk, we, addrw, addrr, di, do)
+        getDut = sim.DUTer()
 
-        Simulation(clkgen, dut, stim).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_sdp_ar, clk=clk, we=we, addrw=addrw, addrr=addrr, di=di, do=do)
+            stm = stim()
+            Simulation(clkgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamDpRf(self):
@@ -275,24 +333,31 @@ class Test(unittest.TestCase):
         clkagen = clock_generator(clka, PERIOD=10)
         clkbgen = clock_generator(clkb, PERIOD=14)
 
-        @instance
         def stim():
-            yield clka.posedge
-            yield mem_fill(clka, wea, addra, dia, CONTENT[0])
-            yield mem_verify(clka, addra, doa, CONTENT[0])
-            yield mem_verify(clkb, addrb, dob, CONTENT[0])
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clka, wea, addra, addra, dia, doa, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
-            yield mem_fill(clkb, web, addrb, dib, CONTENT[0])
-            yield mem_verify(clkb, addrb, dob, CONTENT[0])
-            yield mem_verify(clka, addra, doa, CONTENT[0])
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clkb, web, addrb, addrb, dib, dob, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clka.posedge
+                yield mem_fill(clka, wea, addra, dia, CONTENT[0])
+                yield mem_verify(clka, addra, doa, CONTENT[0])
+                yield mem_verify(clkb, addrb, dob, CONTENT[0])
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clka, wea, addra, addra, dia, doa, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
+                yield mem_fill(clkb, web, addrb, dib, CONTENT[0])
+                yield mem_verify(clkb, addrb, dob, CONTENT[0])
+                yield mem_verify(clka, addra, doa, CONTENT[0])
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clkb, web, addrb, addrb, dib, dob, content_wr=CONTENT[i], content_rd=CONTENT[i-1])
+                raise StopSimulation
+            return _inst
 
-        dut = ram_dp_rf(clka, clkb, wea, web, addra, addrb, dia, dib, doa, dob)
+        getDut = sim.DUTer()
 
-        Simulation(clkagen, clkbgen, dut, stim).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_dp_rf, clka=clka, clkb=clkb, wea=wea, web=web, addra=addra, addrb=addrb, dia=dia, dib=dib, doa=doa, dob=dob)
+            stm = stim()
+            Simulation(clkagen, clkbgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamDpWf(self):
@@ -317,24 +382,31 @@ class Test(unittest.TestCase):
         clkagen = clock_generator(clka, PERIOD=10)
         clkbgen = clock_generator(clkb, PERIOD=14)
 
-        @instance
         def stim():
-            yield clka.posedge
-            yield mem_fill(clka, wea, addra, dia, CONTENT[0])
-            yield mem_verify(clka, addra, doa, CONTENT[0])
-            yield mem_verify(clkb, addrb, dob, CONTENT[0])
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clka, wea, addra, addra, dia, doa, content_wr=CONTENT[i], content_rd=CONTENT[i])
-            yield mem_fill(clkb, web, addrb, dib, CONTENT[0])
-            yield mem_verify(clkb, addrb, dob, CONTENT[0])
-            yield mem_verify(clka, addra, doa, CONTENT[0])
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clkb, web, addrb, addrb, dib, dob, content_wr=CONTENT[i], content_rd=CONTENT[i])
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clka.posedge
+                yield mem_fill(clka, wea, addra, dia, CONTENT[0])
+                yield mem_verify(clka, addra, doa, CONTENT[0])
+                yield mem_verify(clkb, addrb, dob, CONTENT[0])
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clka, wea, addra, addra, dia, doa, content_wr=CONTENT[i], content_rd=CONTENT[i])
+                yield mem_fill(clkb, web, addrb, dib, CONTENT[0])
+                yield mem_verify(clkb, addrb, dob, CONTENT[0])
+                yield mem_verify(clka, addra, doa, CONTENT[0])
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clkb, web, addrb, addrb, dib, dob, content_wr=CONTENT[i], content_rd=CONTENT[i])
+                raise StopSimulation
+            return _inst
 
-        dut = ram_dp_wf(clka, clkb, wea, web, addra, addrb, dia, dib, doa, dob)
+        getDut = sim.DUTer()
 
-        Simulation(clkagen, clkbgen, dut, stim).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_dp_wf, clka=clka, clkb=clkb, wea=wea, web=web, addra=addra, addrb=addrb, dia=dia, dib=dib, doa=doa, dob=dob)
+            stm = stim()
+            Simulation(clkagen, clkbgen, dut, stm).run()
+            del dut, stm
 
 
     def testRamDpAr(self):
@@ -359,24 +431,31 @@ class Test(unittest.TestCase):
         clkagen = clock_generator(clka, PERIOD=10)
         clkbgen = clock_generator(clkb, PERIOD=14)
 
-        @instance
         def stim():
-            yield clka.posedge
-            yield mem_fill(clka, wea, addra, dia, CONTENT[0])
-            yield mem_verify(clka, addra, doa, CONTENT[0], ASYNC_RD=True)
-            yield mem_verify(clkb, addrb, dob, CONTENT[0], ASYNC_RD=True)
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clka, wea, addra, addra, dia, doa, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
-            yield mem_fill(clkb, web, addrb, dib, CONTENT[0])
-            yield mem_verify(clkb, addrb, dob, CONTENT[0], ASYNC_RD=True)
-            yield mem_verify(clka, addra, doa, CONTENT[0], ASYNC_RD=True)
-            for i in range(1, len(CONTENT)):
-                yield mem_write_and_read(clkb, web, addrb, addrb, dib, dob, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
-            raise StopSimulation
+            @instance
+            def _inst():
+                yield clka.posedge
+                yield mem_fill(clka, wea, addra, dia, CONTENT[0])
+                yield mem_verify(clka, addra, doa, CONTENT[0], ASYNC_RD=True)
+                yield mem_verify(clkb, addrb, dob, CONTENT[0], ASYNC_RD=True)
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clka, wea, addra, addra, dia, doa, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
+                yield mem_fill(clkb, web, addrb, dib, CONTENT[0])
+                yield mem_verify(clkb, addrb, dob, CONTENT[0], ASYNC_RD=True)
+                yield mem_verify(clka, addra, doa, CONTENT[0], ASYNC_RD=True)
+                for i in range(1, len(CONTENT)):
+                    yield mem_write_and_read(clkb, web, addrb, addrb, dib, dob, content_wr=CONTENT[i], content_rd=CONTENT[i-1], ASYNC_RD=True)
+                raise StopSimulation
+            return _inst
 
-        dut = ram_dp_ar(clka, clkb, wea, web, addra, addrb, dia, dib, doa, dob)
+        getDut = sim.DUTer()
 
-        Simulation(clkagen, clkbgen, dut, stim).run()
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            dut = getDut(ram_dp_ar, clka=clka, clkb=clkb, wea=wea, web=web, addra=addra, addrb=addrb, dia=dia, dib=dib, doa=doa, dob=dob)
+            stm = stim()
+            Simulation(clkagen, clkbgen, dut, stm).run()
+            del dut, stm
 
 
 if __name__ == "__main__":
