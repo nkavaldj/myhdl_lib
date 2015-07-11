@@ -4,11 +4,6 @@ from myhdl import *
 from myhdl_lib.pipeline_control import pipeline_control
 import myhdl_lib.simulation as sim
 
-def clock_generator(clk, PERIOD):
-    @always(delay(PERIOD//2))
-    def _clkgen():
-        clk.next = not clk
-    return _clkgen
 
 class TestPipelineControl(unittest.TestCase):
 
@@ -19,7 +14,7 @@ class TestPipelineControl(unittest.TestCase):
     def setUp(self):
         self.rst = ResetSignal(val=0, active=1, async=False)
         self.clk = Signal(bool(0))
-        self.clkgen = clock_generator(self.clk, PERIOD=10)
+        self.clkgen = sim.clock_generator(self.clk, PERIOD=10)
 
         self.rx_rdy = Signal(bool(0))
         self.rx_vld = Signal(bool(0))

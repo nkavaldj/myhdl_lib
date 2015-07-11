@@ -6,12 +6,6 @@ from myhdl_lib.sfifo import sfifo
 from myhdl_lib import sfifo_beh
 import myhdl_lib.simulation as sim
 
-def clock_generator(clk, PERIOD):
-    @always(delay(PERIOD//2))
-    def _clkgen():
-        clk.next = not clk
-    return _clkgen
-
 
 class TestSFifo(unittest.TestCase):
 
@@ -51,7 +45,7 @@ class TestSFifo(unittest.TestCase):
 
         self.rst = ResetSignal(val=0, active=1, async=False)
         self.clk = Signal(bool(0))
-        self.clkgen = clock_generator(self.clk, PERIOD=10)
+        self.clkgen = sim.clock_generator(self.clk, PERIOD=10)
 
 
     def tearDown(self):
