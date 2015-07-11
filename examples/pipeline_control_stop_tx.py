@@ -1,5 +1,6 @@
 from myhdl import *
 from myhdl_lib.pipeline_control import pipeline_control
+import myhdl_lib.simulation as sim
 
 
 
@@ -148,25 +149,6 @@ class Capture():
         self.d = int(self.dat)
 
 
-def reset_generator(rst, clk, RST_LENGTH_CC=10):
-    ''' Generates initial reset '''
-    @instance
-    def _reset():
-        rst.next = rst.active
-        for _ in range(RST_LENGTH_CC):
-            yield clk.posedge
-        rst.next = not rst.active
-    return _reset
-
-
-def clock_generator(clk, PERIOD):
-    ''' Generates continuous clock '''
-    @always(delay(PERIOD//2))
-    def _clkgen():
-        clk.next = not clk
-    return _clkgen
-
-
 def pipeline_control_stop_tx():
     ''' Instantiates the arithmetic_mean4 pipeline, feeds it with data and drains its output '''
 
@@ -177,8 +159,8 @@ def pipeline_control_stop_tx():
     rx_dat = Signal(intbv(0)[8:])
     tx_dat = Signal(intbv(0)[8:])
 
-    clkgen = clock_generator(clk, 10)
-    rstgen = reset_generator(rst, clk)
+    clkgen = sim.clock_generator(clk, 10)
+    rstgen = sim.reset_generator(rst, clk)
     dut = arithmetic_mean4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
 #     dut = traceSignals(arithmetic_mean4, rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
     drv = Driver(rst, clk, rx_rdy, rx_vld, rx_dat)

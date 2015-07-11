@@ -1,5 +1,6 @@
 from myhdl import *
 from myhdl_lib.pipeline_control import pipeline_control
+import myhdl_lib.simulation as sim
 
 
 
@@ -124,25 +125,6 @@ class Capture():
         self.d = int(self.dat)
 
 
-def reset_generator(rst, clk, RST_LENGTH_CC=10):
-    ''' Generates initial reset '''
-    @instance
-    def _reset():
-        rst.next = rst.active
-        for _ in range(RST_LENGTH_CC):
-            yield clk.posedge
-        rst.next = not rst.active
-    return _reset
-
-
-def clock_generator(clk, PERIOD):
-    ''' Generates continuous clock '''
-    @always(delay(PERIOD//2))
-    def _clkgen():
-        clk.next = not clk
-    return _clkgen
-
-
 def pipeline_control_simple():
 
     rst = ResetSignal(val=0, active=1, async=False)
@@ -152,8 +134,8 @@ def pipeline_control_simple():
     rx_dat = Signal(intbv(0)[7:0])
     tx_dat = Signal(intbv(0, min=-128, max=1))
 
-    clkgen = clock_generator(clk, 10)
-    rstgen = reset_generator(rst, clk)
+    clkgen = sim.clock_generator(clk, 10)
+    rstgen = sim.reset_generator(rst, clk)
     dut = twos_complement(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
 #     dut = traceSignals(twos_complement, rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
     drv = Driver(rst, clk, rx_rdy, rx_vld, rx_dat)
