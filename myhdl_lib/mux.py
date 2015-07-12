@@ -32,9 +32,9 @@ def demux(sel, di, ls_do):
     @always_comb
     def _demux():
         for i in range(N):
-            ls_do.next = 0
+            ls_do[i].next = 0
             if i == sel:
-                ls_do.next = di
+                ls_do[i].next = di
     return _demux
 
 
