@@ -16,7 +16,7 @@ class TestLsDemux(unittest.TestCase):
     def testLsDemux5(self):
         ''' LS_DEMUX: 5 outputs '''
         DMAX = 100
-        NUM_INPUTS = 5
+        NUM_OUTPUTS = 5
 
         def ls_demux_top(sel, 
                        di_0, di_1, di_2,
@@ -84,7 +84,7 @@ class TestLsDemux(unittest.TestCase):
             return instances()
 
 
-        sel = Signal(intbv(0,min=0,max=NUM_INPUTS))
+        sel = Signal(intbv(0,min=0,max=NUM_OUTPUTS))
 
         ls_di = [Signal(bool(0)),
                  Signal(intbv(0,min=0,max=DMAX)),
@@ -92,7 +92,7 @@ class TestLsDemux(unittest.TestCase):
 
         lsls_do = [[Signal(bool(0)),
                     Signal(intbv(0,min=0,max=DMAX)),
-                    Signal(intbv(0,min=-DMAX,max=DMAX))] for _ in range(NUM_INPUTS)]
+                    Signal(intbv(0,min=-DMAX,max=DMAX))] for _ in range(NUM_OUTPUTS)]
 
         argl = {"sel":sel, 
                 "di_0":ls_di[0],"di_1":ls_di[1],"di_2":ls_di[2],
@@ -113,15 +113,15 @@ class TestLsDemux(unittest.TestCase):
                 for _ in range(2):
                     d = [[random.randint(0,1),
                           random.randint(0,DMAX-1),
-                          random.randint(-DMAX,DMAX-1)] for _ in range(NUM_INPUTS)]
+                          random.randint(-DMAX,DMAX-1)] for _ in range(NUM_OUTPUTS)]
 
-                    for s in range(NUM_INPUTS):
+                    for s in range(NUM_OUTPUTS):
                         for j in range(3):
                             ls_di[j].next = d[s][j]
                         sel.next = s
                         yield delay(10)
 
-                        for o in range(NUM_INPUTS):
+                        for o in range(NUM_OUTPUTS):
                             if s == o:
                                 assert d[s][0] == lsls_do[o][0], "Mux output {} (sel={}): expected {}, detected {}".format(o, sel, d[s], [int(x) for x in lsls_do[o]])
                                 assert d[s][1] == lsls_do[o][1], "Mux output {} (sel={}): expected {}, detected {}".format(o, sel, d[s], [int(x) for x in lsls_do[o]])
