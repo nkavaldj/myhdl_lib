@@ -1,3 +1,5 @@
+import unittest
+
 from myhdl import *
 from myhdl_lib.mux import mux
 import myhdl_lib.simulation as sim
@@ -5,7 +7,6 @@ import myhdl_lib.simulation as sim
 import random
 
 
-import unittest
 
 
 class TestMux(unittest.TestCase):
@@ -20,7 +21,7 @@ class TestMux(unittest.TestCase):
         DMAX = 100
         NUM_INPUTS = 5
 
-        def mux_wrap(sel, di_0, di_1, di_2, di_3, di_4, do):
+        def mux_top(sel, di_0, di_1, di_2, di_3, di_4, do):
             ''' Needed when mux is co-simulated as top level'''
             ls_di = [Signal(intbv(0,min=0,max=DMAX)) for _ in range(NUM_INPUTS)]
             @always_comb
@@ -67,7 +68,7 @@ class TestMux(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            dut=getDut(mux_wrap, **argl)
+            dut=getDut(mux_top, **argl)
             stm = stim()
             Simulation( dut, stm).run()
             del dut, stm
@@ -78,7 +79,7 @@ class TestMux(unittest.TestCase):
         DMAX = 100
         NUM_INPUTS = 2
 
-        def mux_wrap(sel, di_0, di_1, do):
+        def mux_top(sel, di_0, di_1, do):
             ''' Needed when mux is co-simulated as top level'''
             ls_di = [Signal(intbv(0,min=0,max=DMAX)) for _ in range(NUM_INPUTS)]
             @always_comb
@@ -122,7 +123,7 @@ class TestMux(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            dut=getDut(mux_wrap, **argl)
+            dut=getDut(mux_top, **argl)
             stm = stim()
             Simulation( dut, stm).run()
             del dut, stm
