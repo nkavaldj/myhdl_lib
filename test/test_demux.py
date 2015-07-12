@@ -57,11 +57,11 @@ class TestDemux(unittest.TestCase):
                         sel.next = s
                         yield delay(10)
 
-                    for i in range(NUM_OUTPUTS):
-                        if s == i:
-                            assert d[s] == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
-                        else:
-                            assert 0 == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
+                        for i in range(NUM_OUTPUTS):
+                            if s == i:
+                                assert d[s] == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
+                            else:
+                                assert 0 == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
 
                 yield delay(10)
                 raise StopSimulation
@@ -119,11 +119,11 @@ class TestDemux(unittest.TestCase):
                         sel.next = s
                         yield delay(10)
 
-                    for i in range(NUM_OUTPUTS):
-                        if s == i:
-                            assert d[s] == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
-                        else:
-                            assert 0 == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
+                        for i in range(NUM_OUTPUTS):
+                            if s == i:
+                                assert d[s] == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, d[s], ls_do[i])
+                            else:
+                                assert 0 == ls_do[i], "Mux output {} (sel={}): expected {}, detected {}".format(i, sel, 0, ls_do[i])
 
                 yield delay(10)
                 raise StopSimulation
