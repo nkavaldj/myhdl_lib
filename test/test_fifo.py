@@ -132,7 +132,6 @@ class TestFifo(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
             for dpt in DEPTH:
-    #             dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
                 dut = getDut( fifo,
                               rst=self.rst,
                               clk=self.clk,
@@ -212,7 +211,6 @@ class TestFifo(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
             for dpt in DEPTH:
-#                 dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
                 dut = getDut(fifo,
                               rst=self.rst,
                               clk=self.clk,
@@ -286,7 +284,6 @@ class TestFifo(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
             for dpt in DEPTH:
-#                 dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
                 dut = getDut(fifo,
                               rst=self.rst,
                               clk=self.clk,
@@ -392,7 +389,6 @@ class TestFifo(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
             for dpt in DEPTH:
-#                 dut = fifo(self.rst, self.clk, self.full, self.we, self.din, self.empty, self.re, self.dout, afull=None, aempty=None, count=self.count, afull_th=None, aempty_th=None, ovf=self.ovf, udf=self.udf, count_max=self.count_max,  depth=dpt, width=None)
                 dut = getDut(fifo,
                              rst=self.rst,
                              clk=self.clk,
