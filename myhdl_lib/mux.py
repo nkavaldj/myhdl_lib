@@ -51,8 +51,9 @@ def ls_mux(sel, lsls_di, ls_do):
             ls_do - output signal structure: [sig, sig, ..., sig]
     """
     N = len(ls_do)
-    lsls_in = zip(*lsls_di)
-    return [mux(sel, lsls_in[i], ls_do[i]) for i in range(N)]
+    lsls_in = [list(x) for x in zip(*lsls_di)]
+    _mux =[mux(sel, lsls_in[i], ls_do[i]) for i in range(N)]
+    return instances()
 
 
 def ls_demux(sel, ls_di, lsls_do):
