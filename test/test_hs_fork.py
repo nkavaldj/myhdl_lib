@@ -14,7 +14,7 @@ class TestHSFork(unittest.TestCase):
         ''' HS_FORK: 3 outputs '''
         NUM_OUTPUTS = 3
 
-        def hs_join_top(i_rdy, i_vld, o0_rdy, o0_vld, o1_rdy, o1_vld, o2_rdy, o2_vld):
+        def hs_fork_top(i_rdy, i_vld, o0_rdy, o0_vld, o1_rdy, o1_vld, o2_rdy, o2_vld):
             ''' Needed when hs_fork is co-simulated as top level'''
 
             hsi_rdy = Signal(bool(0))
@@ -100,7 +100,7 @@ class TestHSFork(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            dut=getDut(hs_join_top, **argl)
+            dut=getDut(hs_fork_top, **argl)
             stm = stim()
             Simulation( dut, stm).run()
             del dut, stm
