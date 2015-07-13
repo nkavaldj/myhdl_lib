@@ -83,9 +83,9 @@ def hs_fork(hsi, ls_hso):
 
 def hs_mux(sel, ls_hsi, hso):
     """ [Many-to-one] Multiplexes a list of input handshake interfaces
-            ls_hsi - list of input handshake tuples (ready, valid)
-            hso - a output handshake tuple (ready, valid)
             sel - selects an input handshake interface to be connected to the output
+            ls_hsi - list of input handshake tuples (ready, valid)
+            hso - output handshake tuple (ready, valid)
     """
     N = len(ls_hsi)
     ls_hsi_rdy, ls_hsi_vld = zip(*ls_hsi)
