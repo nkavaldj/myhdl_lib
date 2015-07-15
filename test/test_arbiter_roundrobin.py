@@ -49,7 +49,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
 
             clkgen = sim.clock_generator(clk, PERIOD=10)
             rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
-            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, sel=sel, strob=strob)
+            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, sel=sel, en=strob)
             stm = stim()
             Simulation(rstgen, clkgen, dut, stm).run()
             del rstgen, clkgen, dut, stm
@@ -93,7 +93,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
 
             clkgen = sim.clock_generator(clk, PERIOD=10)
             rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
-            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, sel=sel, strob=strob)
+            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, sel=sel, en=strob)
             stm = stim()
             Simulation(rstgen, clkgen, dut, stm).run()
             del rstgen, clkgen, dut, stm
@@ -139,7 +139,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
 
             clkgen = sim.clock_generator(clk, PERIOD=10)
             rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
-            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, sel=sel, strob=strob)
+            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, sel=sel, en=strob)
             stm = stim()
             Simulation(rstgen, clkgen, dut, stm).run()
             del rstgen, clkgen, dut, stm
