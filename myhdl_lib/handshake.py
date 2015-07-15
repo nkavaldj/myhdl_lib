@@ -180,24 +180,36 @@ def hs_arbdemux(rst, clk, hsi, ls_hso, sel, ARBITER_TYPE="priority"):
             sel    - (o) indicates the currently selected output handshake interface
             ARBITER_TYPE - selects the type of arbiter to be used, "priority" or "roundrobin"
     """
-    shi_rdy, hsi_vld = hsi
-    ls_rdy = [hs[0] for hs in ls_hso]
-    s = Signal(intbv(0), min=0, max=len(ls_rdy))
-    prio_update = Signal(bool(0))
+    N = len(ls_hso)
+    ls_hso_rdy, ls_hso_vld = zip(*ls_hso)
+    ls_hso_rdy = list(ls_hso_rdy)
 
+    # Needed to avoid: "myhdl.ConversionError: Signal in multiple list is not supported:"
+    ls_rdy = [Signal(bool(0)) for _ in range(N)]
+    _a = [assign(ls_rdy[i], ls_hso_rdy[i]) for i in range(N)]
+
+    sel_s = Signal(intbv(0, min=0, max=len(ls_rdy)))
     @always_comb
-    def comb():
-        prio_update.next = shi_rdy and hsi_vld
-        sel.next = s
+    def _sel():
+        sel.next = sel_s
+
+    priority_update = None
+    if (ARBITER_TYPE == "roundrobin"):
+        shi_rdy, hsi_vld = hsi
+        priority_update = Signal(bool(0))
+
+        @always_comb
+        def _prio():
+            priority_update.next = shi_rdy and hsi_vld
 
     if (ARBITER_TYPE == "priority"):
-        arb = arbiter_priority(ls_rdy, s)
+        arb = arbiter_priority(ls_rdy, sel_s)
     elif (ARBITER_TYPE == "roundrobin"):
-        arb = arbiter_roundrobin(rst, clk, ls_rdy, s, prio_update)
+        arb = arbiter_roundrobin(rst, clk, ls_rdy, sel_s, priority_update)
     else:
         assert "hs_arbdemux: Unknown arbiter type: {}".format(ARBITER_TYPE)
 
-    demux = hs_demux(s, hsi, ls_hso)
+    demux = hs_demux(sel_s, hsi, ls_hso)
 
     return instances()
 
