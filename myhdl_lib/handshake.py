@@ -145,13 +145,19 @@ def hs_arbmux(rst, clk, ls_hsi, hso, sel, ARBITER_TYPE="priority"):
     _a = [assign(ls_vld[i], ls_hsi_vld[i]) for i in range(N)]
 
     sel_s = Signal(intbv(0, min=0, max=N))
-    hso_rdy, hso_vld = hso
-    priority_update = Signal(bool(0))
-
     @always_comb
-    def comb():
-        priority_update.next = hso_rdy and hso_vld
+    def _sel():
         sel.next = sel_s
+
+    priority_update = None
+
+    if (ARBITER_TYPE == "roundrobin"):
+        hso_rdy, hso_vld = hso
+        priority_update = Signal(bool(0))
+
+        @always_comb
+        def _prio():
+            priority_update.next = hso_rdy and hso_vld
 
     if (ARBITER_TYPE == "priority"):
         _arb = arbiter_priority(req_vec=ls_vld, sel=sel_s)

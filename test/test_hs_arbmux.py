@@ -62,7 +62,7 @@ class TestArbMux(unittest.TestCase):
         rst = ResetSignal(val=0, active=1, async=False)
         clk = Signal(bool(0))
 
-        argl = {"rst":rst, "clk":clk,
+        argl = {"rst":None, "clk":None,
                 "i0_rdy":ls_hsi[0][0], "i0_vld":ls_hsi[0][1],
                 "i1_rdy":ls_hsi[1][0], "i1_vld":ls_hsi[1][1],
                 "i2_rdy":ls_hsi[2][0], "i2_vld":ls_hsi[2][1],
