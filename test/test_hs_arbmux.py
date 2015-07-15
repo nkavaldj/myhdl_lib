@@ -194,7 +194,7 @@ class TestArbMux(unittest.TestCase):
                     else:
                         assert 0==hso_vld, "hso_vld: expected {}, detected {}".format(0, hso_vld)
 
-                yield delay(10)
+                yield clk.posedge
                 raise StopSimulation
             return _inst
 
