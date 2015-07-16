@@ -2,9 +2,7 @@ import unittest
 
 from myhdl import *
 from myhdl_lib.utils import byteorder
-from myhdl_lib.utils import assign
 import myhdl_lib.simulation as sim
-from mylib import byte_order_reverse
 
 import random
 
