@@ -72,8 +72,49 @@ def ls_demux(sel, ls_di, lsls_do):
     return [demux(sel, ls_di[i], lsls_out[i])for i in range(N)]
 
 
+def bitslice_select(offset, bv_di, bv_do):
+    ''' Selects a bit-slice from a bit-vector
+            offset - (i) bit offset of the slice
+            bv_di  - (i) bit vector from where the slice is taken
+            bv_do  - (o) selected slice; the length of this bit-vector defines the number of bit in the slice
+
+            bv_do = bv_di[len(bv_do)+offset:offset]
+    '''
+    LEN_I = len(bv_di)
+    LEN_O = len(bv_do)
+
+    assert LEN_I >= LEN_O, "bitslice_select: expects len(bv_di) >= len(bv_do), but len(bv_di)={}, len(bv_do)".format(LEN_I, LEN_O)
+
+    OFFSET_MAX = LEN_I - LEN_O + 1
+
+    @always_comb
+    def _slice():
+        bv_do.next = 0
+        for i in range(OFFSET_MAX):
+            if i==offset:
+                for b in range(LEN_O):
+                    bv_do.next[b] = bv_di[i+b]
+
+    return _slice
 
 
+def byteslice_select(offset, bv_di, bv_do):
+    '''  '''
+    LEN_I = len(bv_di)
+    LEN_O = len(bv_do)
+
+    assert (LEN_I % 8)==0, "byteslice_select: expects len(bv_di)=8*x, but len(bv_di)={} bits".format(LEN_I)
+    assert (LEN_O % 8)==0, "byteslice_select: expects len(bv_do)=8*x, but len(bv_do)={} bits".format(LEN_O)
+
+    bit_offset = Signal(intbv(0)[len(offset)+3:])
+
+    @always_comb
+    def _offset():
+        bit_offset.next = offset << 3
+
+    _slice = bitslice_select(bit_offset, bv_di, bv_do)
+
+    return _offset, _slice
 
 if __name__ == '__main__':
     pass
