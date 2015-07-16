@@ -75,7 +75,7 @@ def ls_demux(sel, ls_di, lsls_do):
 def bitslice_select(offset, bv_di, bv_do):
     ''' Selects a bit-slice from a bit-vector
             offset - (i) bit offset of the slice
-            bv_di  - (i) bit vector from where the slice is taken
+            bv_di  - (i) bit vector where the slice is taken from
             bv_do  - (o) selected slice; the length of this bit-vector defines the number of bit in the slice
 
             bv_do = bv_di[len(bv_do)+offset:offset]
@@ -99,7 +99,11 @@ def bitslice_select(offset, bv_di, bv_do):
 
 
 def byteslice_select(offset, bv_di, bv_do):
-    '''  '''
+    ''' Selects a slice of length 8*n aligned on a byte from a bit-vector
+            offset - (i) byte offset of the slice
+            bv_di  - (i) bit vector where the slice is taken from; must len(bv_di) = 8*m
+            bv_do  - (o) selected slice; must len(bv_do) = 8*n, n<=m; len(bv_do) defines the number of bit in the slice
+    '''
     LEN_I = len(bv_di)
     LEN_O = len(bv_do)
 
