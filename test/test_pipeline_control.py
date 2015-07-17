@@ -33,7 +33,7 @@ class TestPipelineControl(unittest.TestCase):
 
     def pipe_state_check(self, rx_rdy, tx_vld, stage_en):
         yield delay(1)
-        assert rx_rdy==self.rx_rdy, "RX_VLD: expected {}, detected {}".format(rx_rdy, self.rx_rdy)
+        assert rx_rdy==self.rx_rdy, "RX_RDY: expected {}, detected {}".format(rx_rdy, self.rx_rdy)
         assert tx_vld==self.tx_vld, "TX_VLD: expected {}, detected {}".format(tx_vld, self.tx_vld)
         assert stage_en==self.en, "STAGE_EN: expected {}, detected {}".format(bin(stage_en), bin(self.en))
 
