@@ -208,7 +208,6 @@ class TestPipelineControl(unittest.TestCase):
                 self.stop_tx = Signal(intbv(0)[dpt:])
                 self.en = Signal(intbv(0)[dpt:])
 
-#                 dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=self.stop_rx, stop_tx=None)
                 dut = getDut( pipeline_control,
                               rst = self.rst,
                               clk = self.clk,
@@ -277,7 +276,6 @@ class TestPipelineControl(unittest.TestCase):
                 self.stop_tx = Signal(intbv(0)[dpt:])
                 self.en = Signal(intbv(0)[dpt:])
 
-#                 dut = pipeline_control(self.rst, self.clk, self.rx_rdy, self.rx_vld, self.tx_rdy, self.tx_vld, self.en, stop_rx=None, stop_tx=self.stop_tx)
                 dut = getDut( pipeline_control,
                               rst = self.rst,
                               clk = self.clk,
