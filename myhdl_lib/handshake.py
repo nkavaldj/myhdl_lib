@@ -21,17 +21,40 @@ from myhdl_lib.utils import assign
   ready   ___|                             |___________|           |_____|     |_____|     |____________
                     ____________      ______      ______________________________            ______      
   valid   _________|           |_____|     |_____|                             |___________|     |______
-                    _____ _____       _____       ___________ _____ ___________            _____        
-   data   xxxxxxxxxX_____X_____XxxxxxX_____XxxxxxX___________X_____X___________XxxxxxxxxxxX_____Xxxxxxxx
+                    _____ _____       _____       ___________ _____ ___________             _____        
+   data   xxxxxxxxxX_____X_____XxxxxxX_____XxxxxxX___________X_____X___________XxxxxxxxxxxxX_____Xxxxxxxx
                       ^     ^           ^                 ^     ^           ^                           
   transactions        ^     ^           ^                 ^     ^           ^                           
 
 
-    Simple synchronization interface. Allows modules to synchronize their operation with other modules. 
+    Simple interface used to synchronize module operation with the operation of other modules. 
     Signals:
-        ready (or rdy) 
-        valid (or vld)
-        data (or dat)
+        ready (or rdy) - in the current clock cycle destination is ready to receive
+        valid (or vld) - in the current clock cycle source is ready to transmit (has valid data)
+        data (or dat) - data to be transmitted
+
+    - Signals "valid" and "ready" advertise *state* (as opposite to notifying about event)
+
+    - The names "valid" and "ready" imply notion of direction by suggesting source and destination.
+      Such notion is natural and intuitive when we have data transfer in one direction, which is 
+      often the case. Then we can clearly identify data source and data destination, the source advertises 
+      the validity of its data via the "valid" signal, and the destination advertises its readiness 
+      to accept data via its "ready" signal.
+
+      But unidirectional data transfer is not the only case when we need synchronization between modules. 
+      Synchronization may be needed when there is no data transfer (just synchronization), or synchronization 
+      may be needed when data is transferred in both directions (modules exchange data). In these two cases 
+      the notion of source and destination is lost and the signal names "valid" and "ready" are not natural 
+      and intuitive. Without the notion of direction both modules that need to synchronize their operation 
+      become equal, and they drive the "ready" and "valid" signals to advertise their readiness. In that 
+      sense both signals have meaning of "I_am_ready". From a point of view of a module, the signal driven 
+      by the module has meaning of "I_am_ready" and the signal received by the module has meaning of 
+      "The_other_is_ready". Following that notion we can give the signals more intuitive local names like 
+      "local_ready" and "foreign_ready", but this will solve the problem only on local level, level of a module,
+      since the notion of local and foreign are relative - what is local for one module is foreign for the other 
+      and vice versa. We still do not have unique, design independent names for the signals between the modules.
+
+      For the moment we use the ready/valid naming, until a better one is proposed.
 
 
 '''
