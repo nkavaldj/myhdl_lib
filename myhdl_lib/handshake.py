@@ -182,7 +182,7 @@ def hs_arbmux(rst, clk, ls_hsi, hso, sel, ARBITER_TYPE="priority"):
         def _prio():
             priority_update.next = hso_rdy and hso_vld
 
-    _arb = arbiter(rst=rst, clk=clk, req_vec=ls_vld, sel=sel_s, en=priority_update, ARBITER_TYPE=ARBITER_TYPE)
+    _arb = arbiter(rst=rst, clk=clk, req_vec=ls_vld, gnt_idx=sel_s, gnt_rdy=priority_update, ARBITER_TYPE=ARBITER_TYPE)
 
     _mux = hs_mux(sel=sel_s, ls_hsi=ls_hsi, hso=hso)
 
@@ -220,7 +220,7 @@ def hs_arbdemux(rst, clk, hsi, ls_hso, sel, ARBITER_TYPE="priority"):
         def _prio():
             priority_update.next = shi_rdy and hsi_vld
 
-    _arb = arbiter(rst=rst, clk=clk, req_vec=ls_rdy, sel=sel_s, en=priority_update, ARBITER_TYPE=ARBITER_TYPE)
+    _arb = arbiter(rst=rst, clk=clk, req_vec=ls_rdy, gnt_idx=sel_s, gnt_rdy=priority_update, ARBITER_TYPE=ARBITER_TYPE)
 
     _demux = hs_demux(sel_s, hsi, ls_hso)
 
