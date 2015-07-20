@@ -46,7 +46,7 @@ def bytecount(rst, clk, rx_vld, rx_sop, rx_eop, rx_dat, rx_mty, count, MAX_BYTES
 
 
 def checksum(rst, clk, rx_vld, rx_sop, rx_eop, rx_dat, rx_mty, chksum, sum16=None, sumN=None, init_sum=None, MAX_BYTES=1500):
-    """ Calculates checksum over a stream of packetised data
+    """ Calculates checksum on a stream of packetised data
             rx_vld   - (i) valid data
             rx_sop   - (i) start of packet
             rx_eop   - (i) end of packet
