@@ -94,8 +94,6 @@ class TestArbiterRoundrobin(unittest.TestCase):
                 for i in range(x.max):
                     x[:] = i
                     req_vec.next = x
-                    yield delay(1)
-
                     s = 0
                     v = 0
                     for k in range(NUM_REQ):
@@ -105,6 +103,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
                             v = 1
                             break
 
+                    yield delay(1)
                     check(vec=(1<<s)*v, idx=s, vld=v)
 
                     yield clk.posedge
@@ -161,6 +160,64 @@ class TestArbiterRoundrobin(unittest.TestCase):
                     for i in range(NUM_REQ):
                         yield delay(1)
                         check(vec=1<<i, idx=i, vld=1)
+                        yield clk.posedge
+
+                yield clk.posedge
+                raise StopSimulation
+            return _inst
+
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+
+            clkgen = sim.clock_generator(clk, PERIOD=10)
+            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, gnt_vec=gnt_vec, gnt_idx=gnt_idx, gnt_vld=gnt_vld, gnt_rdy=gnt_rdy)
+            stm = stim()
+            Simulation(rstgen, clkgen, dut, stm).run()
+            del rstgen, clkgen, dut, stm
+
+
+    def testAllDummy(self):
+        ''' ARBITER_ROUNDROBIN: All requests, dummy strobe'''
+        NUM_REQ = 5
+        req_vec = Signal(intbv(0)[NUM_REQ:])
+        gnt_vec = Signal(intbv(0)[NUM_REQ:])
+        gnt_idx = Signal(intbv(0, min=0, max=NUM_REQ))
+        gnt_vld = Signal(bool(0))
+        gnt_rdy = Signal(bool(0))
+
+        rst = ResetSignal(val=0, active=1, async=False)
+        clk = Signal(bool(0))
+
+        def check(vec, idx, vld):
+            assert vec == gnt_vec, "gnt_vec: expected {}, detected {}".format(vec, gnt_vec)
+            assert idx == gnt_idx, "gnt_idx: expected {}, detected {}".format(idx, gnt_idx)
+            assert vld == gnt_vld, "gnt_vld: expected {}, detected {}".format(vld, gnt_vld)
+
+        def stim():
+            @instance
+            def _inst():
+                gnt_rdy.next = 0
+                req_vec.next = 0
+                yield rst.negedge
+                check(vec=0, idx=0, vld=0)
+
+                mask = req_vec.max-1
+                req_vec.next = mask
+                gnt_rdy.next = 1
+                for _ in range(3):
+                    for i in range(NUM_REQ):
+                        # gnt_vld & gnt_rdy
+                        req_vec.next = mask
+                        yield delay(1)
+                        check(vec=1<<i, idx=i, vld=1)
+                        yield clk.posedge
+                        # /gnt_vld & gnt_rdy
+                        req_vec.next = 0
+                        yield delay(1)
+                        check(vec=0, idx=0, vld=0)
                         yield clk.posedge
 
                 yield clk.posedge
