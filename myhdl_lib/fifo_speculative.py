@@ -3,7 +3,7 @@ from mem import ram_sdp_ar
 
 
 
-def sfifo(rst, clk, full, we, din, empty, re, dout, wr_commit=None, wr_discard=None, rd_commit=None, rd_discard=None, afull=None, aempty=None, count=None, afull_th=None, aempty_th=None, ovf=None, udf=None, count_max=None,  depth=None, width=None):
+def fifo_speculative(rst, clk, full, we, din, empty, re, dout, wr_commit=None, wr_discard=None, rd_commit=None, rd_discard=None, afull=None, aempty=None, count=None, afull_th=None, aempty_th=None, ovf=None, udf=None, count_max=None,  depth=None, width=None):
     """ Speculative FIFO
 
         Input  interface: full,  we, din,  wr_commit, wr_discard
@@ -315,7 +315,7 @@ def convert(depth=256, width=8):
     udf         = Signal(bool(0))
     count_max   = Signal(intbv(0, min=0, max=depth+1))
 
-    toVerilog(sfifo, rst, clk, full, we, din, empty, re, dout, wr_commit, wr_discard, rd_commit, rd_discard, afull, aempty, count, afull_th, aempty_th, ovf, udf, count_max, depth=depth, width=width)
+    toVerilog(fifo_speculative, rst, clk, full, we, din, empty, re, dout, wr_commit, wr_discard, rd_commit, rd_discard, afull, aempty, count, afull_th, aempty_th, ovf, udf, count_max, depth=depth, width=width)
 
 
 if __name__ == "__main__":

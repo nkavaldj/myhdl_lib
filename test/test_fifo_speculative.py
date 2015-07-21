@@ -2,7 +2,7 @@ import unittest
 import itertools
 
 from myhdl import *
-from myhdl_lib.sfifo import sfifo
+from myhdl_lib.fifo_speculative import fifo_speculative
 from myhdl_lib import sfifo_beh
 import myhdl_lib.simulation as sim
 
@@ -163,7 +163,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -230,7 +230,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -294,7 +294,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -354,7 +354,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -418,7 +418,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -486,7 +486,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -553,7 +553,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -636,7 +636,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
@@ -711,7 +711,7 @@ class TestSFifo(unittest.TestCase):
             getDut.selectSimulator(s)
             for dpt in DEPTH:
                 self.sfifo_model = sfifo_beh.sfifo_beh(dpt)
-                dut = getDut( sfifo,
+                dut = getDut( fifo_speculative,
                               rst = self.rst,
                               clk = self.clk,
                               full = self.full,
