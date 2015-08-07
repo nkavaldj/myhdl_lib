@@ -124,6 +124,121 @@ class TestPayloadGenerator(unittest.TestCase):
                     assert x <= MAX_INT
 
 
+    def testDimensions(self):
+        ''' PAYLOAD_GENERATOR: Dimensions '''
+        MAX_INT = 67
+        MAX_PKT_LEN = 7
+        MAX_DIM_SIZE = 14
+
+        lvls = 0
+        dim = None
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, str)
+
+        dim = 10
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, str)
+        assert len(pld)==dim
+
+        dim = [10]
+        with self.assertRaises(TypeError):
+            payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+
+        lvls = 1
+        dim = None
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        for ls in pld:
+            assert isinstance(ls, str)
+
+        dim = 3
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==dim
+        for ls in pld:
+            assert isinstance(ls, str)
+
+        dim = [4,6,9]
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==len(dim)
+        for ls, d in zip(pld,dim):
+            assert isinstance(ls, str)
+            assert len(ls)==d
+
+        dim = [4,None,9]
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==len(dim)
+        for ls in pld:
+            assert isinstance(ls, str)
+
+        dim = [4,6,[9]]
+        with self.assertRaises(TypeError):
+            payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+
+        lvls = 2
+        dim = None
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        for ls in pld:
+            assert isinstance(ls, list)
+            for s in ls:
+                assert isinstance(s, str)
+
+        dim = 5
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==dim
+        for ls in pld:
+            assert isinstance(ls, list)
+            for s in ls:
+                assert isinstance(s, str)
+
+        dim = [2,3,4]
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==len(dim)
+        for ls in pld:
+            assert isinstance(ls, list)
+            for s in ls:
+                assert isinstance(s, str)
+
+        dim = [[2],[3,4],[5,6,7]]
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==len(dim)
+        for ls, d in zip(pld, dim):
+            assert isinstance(ls, list)
+            assert len(ls)==len(d)
+            for s, dd in zip(ls,d):
+                assert isinstance(s, str)
+                assert len(s)==dd
+
+        dim = [[2],[3,None],[5,6,7]]
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==len(dim)
+        for ls, d in zip(pld, dim):
+            assert isinstance(ls, list)
+            assert len(ls)==len(d)
+            for s in ls:
+                assert isinstance(s, str)
+
+        dim = [[2],None,[5,6,7]]
+        pld = payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+        assert isinstance(pld, list)
+        assert len(pld)==len(dim)
+        for ls in pld:
+            assert isinstance(ls, list)
+            for s in ls:
+                assert isinstance(s, str)
+
+        dim = [[2],[3,[4]],[5,6,7]]
+        with self.assertRaises(TypeError):
+            payload_generator(levels=lvls, dimensions=dim, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=True, sequential=False)
+
+
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
