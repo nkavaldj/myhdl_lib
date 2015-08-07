@@ -1,4 +1,5 @@
 import unittest
+from itertools import cycle, dropwhile, islice
 
 from myhdl_lib.simulation.payload_generator import payload_generator
 
@@ -6,6 +7,7 @@ class TestPayloadGenerator(unittest.TestCase):
 
 
     def testLevels(self):
+        ''' PAYLOAD_GENERATOR: Levels'''
         MAX_INT = 67
         MAX_PKT_LEN = 7
         MAX_DIM_SIZE = 14
@@ -40,6 +42,43 @@ class TestPayloadGenerator(unittest.TestCase):
                     assert isinstance(x, int)
                     assert 0<=x
                     assert x<=MAX_INT
+
+
+    def testSequential(self):
+        ''' PAYLOAD_GENERATOR: Sequential'''
+        MAX_INT = 67
+        MAX_PKT_LEN = 7
+        MAX_DIM_SIZE = 14
+
+        def expected_sequence(l):
+            cycled = cycle(range(MAX_INT+1))
+            skipped = dropwhile(lambda x: x != 1, cycled)
+            sliced = islice(skipped, None, len(pld))
+            return list(sliced)
+
+        for i in range(10):
+            sequential = (i%2)==0
+            # Single packet
+            pld = payload_generator(levels=0, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=False, sequential=sequential)
+            assert isinstance(pld, list)
+            if sequential:
+                assert pld==expected_sequence(len(pld))
+            else:
+                assert pld!=expected_sequence(len(pld))
+
+            # Two packets
+            pld = payload_generator(levels=1, dimensions=2, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=False, sequential=sequential)
+            assert isinstance(pld, list)
+            assert len(pld)==2
+            assert isinstance(pld[0], list)
+            assert isinstance(pld[1], list)
+            # flatten
+            pld = [x for ls in pld for x in ls]
+            if sequential:
+                assert pld==expected_sequence(len(pld))
+            else:
+                assert pld!=expected_sequence(len(pld))
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
