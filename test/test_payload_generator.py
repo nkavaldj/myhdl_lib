@@ -1,5 +1,6 @@
 import unittest
 from itertools import cycle, dropwhile, islice
+from struct import unpack
 
 from myhdl_lib.simulation.payload_generator import payload_generator
 
@@ -7,7 +8,7 @@ class TestPayloadGenerator(unittest.TestCase):
 
 
     def testLevels(self):
-        ''' PAYLOAD_GENERATOR: Levels'''
+        ''' PAYLOAD_GENERATOR: Levels '''
         MAX_INT = 67
         MAX_PKT_LEN = 7
         MAX_DIM_SIZE = 14
@@ -45,7 +46,7 @@ class TestPayloadGenerator(unittest.TestCase):
 
 
     def testSequential(self):
-        ''' PAYLOAD_GENERATOR: Sequential'''
+        ''' PAYLOAD_GENERATOR: Sequential '''
         MAX_INT = 67
         MAX_PKT_LEN = 7
         MAX_DIM_SIZE = 14
@@ -78,6 +79,49 @@ class TestPayloadGenerator(unittest.TestCase):
                 assert pld==expected_sequence(len(pld))
             else:
                 assert pld!=expected_sequence(len(pld))
+
+
+    def testString(self):
+        ''' PAYLOAD_GENERATOR: String '''
+        MAX_INT = 67
+        MAX_PKT_LEN = 7
+        MAX_DIM_SIZE = 14
+
+        for i in range(10):
+            string = (i%2)==0
+            # Single packet
+            pld = payload_generator(levels=0, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=string, sequential=False)
+            if string:
+                assert isinstance(pld, str)
+                for x in pld:
+                    assert unpack('B', x)[0] >= 0
+                    assert unpack('B', x)[0] <= MAX_INT
+            else:
+                assert isinstance(pld, list)
+                for x in pld:
+                    assert isinstance(x, int)
+                    assert x >= 0
+                    assert x <= MAX_INT
+
+            # Two packets
+            pld = payload_generator(levels=1, dimensions=2, max_int=MAX_INT, max_pkt_len=MAX_PKT_LEN, max_dim_size=MAX_DIM_SIZE, string=string, sequential=False)
+            assert isinstance(pld, list)
+            assert len(pld)==2
+            if string:
+                assert isinstance(pld[0], str)
+                assert isinstance(pld[1], str)
+                pld = pld[0]+pld[1]
+                for x in pld:
+                    assert unpack('B', x)[0] >= 0
+                    assert unpack('B', x)[0] <= MAX_INT
+            else:
+                assert isinstance(pld[0], list)
+                assert isinstance(pld[1], list)
+                pld = pld[0]+pld[1]
+                for x in pld:
+                    assert isinstance(x, int)
+                    assert x >= 0
+                    assert x <= MAX_INT
 
 
 if __name__ == "__main__":
