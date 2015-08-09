@@ -25,8 +25,8 @@ class TestBytecount(unittest.TestCase):
             MTY_WIDTH = int(floor(log(BYTES_PER_WORD,2))) + 1
             COUNT_WIDTH = int(floor(log(MAX_NUM_BYTES,2))) + 1
 
-            rst = ResetSignal(val=0, active=1, async=False)
-            clk = Signal(bool(0))
+            clk = sim.Clock(val=0, period=10, units="ns")
+            rst = sim.ResetSync(clk=clk, val=0, active=1)
 
             rx_vld = Signal(bool(0))
             rx_sop = Signal(bool(0))
@@ -46,8 +46,7 @@ class TestBytecount(unittest.TestCase):
                     "MAX_BYTES":MAX_NUM_BYTES}
 
             dut = getDut(bytecount, **argl)
-            clkgen = sim.clock_generator(clk, PERIOD=10)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
 
             @instance
             def _stim():
@@ -56,7 +55,7 @@ class TestBytecount(unittest.TestCase):
                 rx_eop.next = 0
                 rx_dat.next = 0
                 rx_mty.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 yield clk.posedge
                 assert 0==count, "bytecount: expected {}, detected {}".format(0, count)
 

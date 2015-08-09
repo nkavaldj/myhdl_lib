@@ -21,8 +21,8 @@ class TestArbiterRoundrobin(unittest.TestCase):
         gnt_vld = Signal(bool(0))
         gnt_rdy = Signal(bool(0))
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         def check(vec, idx, vld):
             assert vec == gnt_vec, "gnt_vec: expected {}, detected {}".format(vec, gnt_vec)
@@ -34,7 +34,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
             def _inst():
                 gnt_rdy.next = 0
                 req_vec.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 check(vec=0, idx=0, vld=0)
 
                 gnt_rdy.next = 1
@@ -54,12 +54,11 @@ class TestArbiterRoundrobin(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            clkgen = sim.clock_generator(clk, PERIOD=10)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, gnt_vec=gnt_vec, gnt_idx=gnt_idx, gnt_vld=gnt_vld, gnt_rdy=gnt_rdy)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del rstgen, clkgen, dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
     def testCount(self):
@@ -71,8 +70,8 @@ class TestArbiterRoundrobin(unittest.TestCase):
         gnt_vld = Signal(bool(0))
         gnt_rdy = Signal(bool(0))
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         def check(vec, idx, vld):
             assert vec == gnt_vec, "gnt_vec: expected {}, detected {}".format(vec, gnt_vec)
@@ -84,7 +83,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
             def _inst():
                 gnt_rdy.next = 0
                 req_vec.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 yield clk.posedge
                 check(vec=0, idx=0, vld=0)
 
@@ -120,12 +119,11 @@ class TestArbiterRoundrobin(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            clkgen = sim.clock_generator(clk, PERIOD=10)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, gnt_vec=gnt_vec, gnt_idx=gnt_idx, gnt_vld=gnt_vld, gnt_rdy=gnt_rdy)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del rstgen, clkgen, dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
     def testAll(self):
@@ -137,8 +135,8 @@ class TestArbiterRoundrobin(unittest.TestCase):
         gnt_vld = Signal(bool(0))
         gnt_rdy = Signal(bool(0))
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         def check(vec, idx, vld):
             assert vec == gnt_vec, "gnt_vec: expected {}, detected {}".format(vec, gnt_vec)
@@ -150,7 +148,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
             def _inst():
                 gnt_rdy.next = 0
                 req_vec.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 check(vec=0, idx=0, vld=0)
 
                 mask = req_vec.max-1
@@ -171,12 +169,11 @@ class TestArbiterRoundrobin(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            clkgen = sim.clock_generator(clk, PERIOD=10)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, gnt_vec=gnt_vec, gnt_idx=gnt_idx, gnt_vld=gnt_vld, gnt_rdy=gnt_rdy)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del rstgen, clkgen, dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
     def testAllDummy(self):
@@ -188,8 +185,8 @@ class TestArbiterRoundrobin(unittest.TestCase):
         gnt_vld = Signal(bool(0))
         gnt_rdy = Signal(bool(0))
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         def check(vec, idx, vld):
             assert vec == gnt_vec, "gnt_vec: expected {}, detected {}".format(vec, gnt_vec)
@@ -201,7 +198,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
             def _inst():
                 gnt_rdy.next = 0
                 req_vec.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 check(vec=0, idx=0, vld=0)
 
                 mask = req_vec.max-1
@@ -229,12 +226,11 @@ class TestArbiterRoundrobin(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            clkgen = sim.clock_generator(clk, PERIOD=10)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, gnt_vec=gnt_vec, gnt_idx=gnt_idx, gnt_vld=gnt_vld, gnt_rdy=gnt_rdy)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del rstgen, clkgen, dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
     def testAllGap(self):
         ''' ARBITER_ROUNDROBIN: All requests, gappy strobe'''
@@ -245,8 +241,8 @@ class TestArbiterRoundrobin(unittest.TestCase):
         gnt_vld = Signal(bool(0))
         gnt_rdy = Signal(bool(0))
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         def check(vec, idx, vld):
             assert vec == gnt_vec, "gnt_vec: expected {}, detected {}".format(vec, gnt_vec)
@@ -258,7 +254,7 @@ class TestArbiterRoundrobin(unittest.TestCase):
             def _inst():
                 gnt_rdy.next = 0
                 req_vec.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 yield clk.posedge
                 check(vec=0, idx=0, vld=0)
 
@@ -287,12 +283,11 @@ class TestArbiterRoundrobin(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
 
-            clkgen = sim.clock_generator(clk, PERIOD=10)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             dut = getDut(arbiter_roundrobin, rst=rst, clk=clk, req_vec=req_vec, gnt_vec=gnt_vec, gnt_idx=gnt_idx, gnt_vld=gnt_vld, gnt_rdy=gnt_rdy)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del rstgen, clkgen, dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
 

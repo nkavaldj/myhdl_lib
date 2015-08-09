@@ -59,8 +59,8 @@ class TestArbMux(unittest.TestCase):
 
         sel = Signal(intbv(0)[NUM_INPUTS:])
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         argl = {"rst":None, "clk":None,
                 "i0_rdy":ls_hsi[0][0], "i0_vld":ls_hsi[0][1],
@@ -116,13 +116,12 @@ class TestArbMux(unittest.TestCase):
 
         for s in self.simulators:
             getDut.selectSimulator(s)
-            clkgen = sim.clock_generator(clk)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
 
             dut=getDut(self.hs_arbmux_top, **argl)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
     def testArbMux3RR(self):
@@ -140,8 +139,8 @@ class TestArbMux(unittest.TestCase):
 
         sel = Signal(intbv(0)[NUM_INPUTS:])
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         argl = {"rst":rst, "clk":clk,
                 "i0_rdy":ls_hsi[0][0], "i0_vld":ls_hsi[0][1],
@@ -155,7 +154,7 @@ class TestArbMux(unittest.TestCase):
                 for i in range(NUM_INPUTS):
                     ls_hsi_vld[i].next = 0
                 hso_rdy.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 yield clk.posedge
                 for i in range(NUM_INPUTS):
                     assert 0==ls_hsi_rdy[i], "hsi_rdy[{}]: expected {}, detected {}".format(i, 0, ls_hsi_rdy[i])
@@ -202,13 +201,12 @@ class TestArbMux(unittest.TestCase):
 
         for s in self.simulators:
             getDut.selectSimulator(s)
-            clkgen = sim.clock_generator(clk)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
 
             dut=getDut(self.hs_arbmux_top, **argl)
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
 if __name__ == "__main__":

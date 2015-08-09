@@ -32,9 +32,9 @@ class TestFifo(unittest.TestCase):
         self.ovf = Signal(bool(0))
         self.udf = Signal(bool(0))
 
-        self.rst = ResetSignal(val=0, active=1, async=False)
-        self.clk = Signal(bool(0))
-        self.clkgen = sim.clock_generator(self.clk, PERIOD=10)
+        self.clk = sim.Clock(val=0, period=10, units="ns")
+        self.rst = sim.ResetSync(clk=self.clk, val=0, active=1)
+        self.clkgen = self.clk.gen()
 
 
     def tearDown(self):
@@ -42,10 +42,7 @@ class TestFifo(unittest.TestCase):
 
 
     def reset(self):
-        self.rst.next = 1
-        for _ in range (5): 
-            yield self.clk.posedge 
-        self.rst.next = 0
+        yield self.rst.pulse(5)
 
     def fifo_write(self, val):
         self.we.next = 1

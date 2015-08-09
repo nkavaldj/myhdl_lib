@@ -93,8 +93,8 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clk = Signal(bool(0))
-        clkgen = sim.clock_generator(clk, PERIOD=10)
+        clk = sim.Clock(val=0, period=10, units="ns")
+        clkgen = clk.gen()
 
         def stim():
             @instance
@@ -130,8 +130,8 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clk = Signal(bool(0))
-        clkgen = sim.clock_generator(clk, PERIOD=10)
+        clk = sim.Clock(val=0, period=10, units="ns")
+        clkgen = clk.gen()
 
         def stim():
             @instance
@@ -167,8 +167,8 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clk = Signal(bool(0))
-        clkgen = sim.clock_generator(clk, PERIOD=10)
+        clk = sim.Clock(val=0, period=10, units="ns")
+        clkgen = clk.gen()
 
         def stim():
             @instance
@@ -205,8 +205,8 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clk = Signal(bool(0))
-        clkgen = sim.clock_generator(clk, PERIOD=10)
+        clk = sim.Clock(val=0, period=10, units="ns")
+        clkgen = clk.gen()
 
         def stim():
             @instance
@@ -243,8 +243,8 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clk = Signal(bool(0))
-        clkgen = sim.clock_generator(clk, PERIOD=10)
+        clk = sim.Clock(val=0, period=10, units="ns")
+        clkgen = clk.gen()
 
         def stim():
             @instance
@@ -281,8 +281,8 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clk = Signal(bool(0))
-        clkgen = sim.clock_generator(clk, PERIOD=10)
+        clk = sim.Clock(val=0, period=10, units="ns")
+        clkgen = clk.gen()
 
         def stim():
             @instance
@@ -322,10 +322,10 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clka = Signal(bool(0))
-        clkb = Signal(bool(0))
-        clkagen = sim.clock_generator(clka, PERIOD=10)
-        clkbgen = sim.clock_generator(clkb, PERIOD=14)
+        clka = sim.Clock(val=0, period=10, units="ns")
+        clkb = sim.Clock(val=0, period=17, units="ns")
+        clkagen = clka.gen()
+        clkbgen = clkb.gen()
 
         def stim():
             @instance
@@ -371,10 +371,10 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clka = Signal(bool(0))
-        clkb = Signal(bool(0))
-        clkagen = sim.clock_generator(clka, PERIOD=10)
-        clkbgen = sim.clock_generator(clkb, PERIOD=14)
+        clka = sim.Clock(val=0, period=10, units="ns")
+        clkb = sim.Clock(val=0, period=14, units="ns")
+        clkagen = clka.gen()
+        clkbgen = clkb.gen()
 
         def stim():
             @instance
@@ -420,10 +420,10 @@ class TestMem(unittest.TestCase):
 
         CONTENT = [[random.randint(DATA_RANGE_MIN, DATA_RANGE_MAX) for _ in range(ADDR_MAX)] for _ in range(5)]
 
-        clka = Signal(bool(0))
-        clkb = Signal(bool(0))
-        clkagen = sim.clock_generator(clka, PERIOD=10)
-        clkbgen = sim.clock_generator(clkb, PERIOD=14)
+        clka = sim.Clock(val=0, period=10, units="ns")
+        clkb = sim.Clock(val=0, period=14, units="ns")
+        clkagen = clka.gen()
+        clkbgen = clkb.gen()
 
         def stim():
             @instance

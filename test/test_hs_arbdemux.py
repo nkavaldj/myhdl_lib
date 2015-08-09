@@ -61,8 +61,8 @@ class TestArbDemux(unittest.TestCase):
 
         sel = Signal(intbv(0)[NUM_OUTPUTS:])
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         argl = {"rst":None, "clk":None,
                 "i_rdy":hsi[0], "i_vld":hsi[1],
@@ -119,11 +119,10 @@ class TestArbDemux(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
             dut=getDut(self.hs_arbdemux_top, **argl)
-            clkgen = sim.clock_generator(clk)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
     def testArbDemux3RR(self):
@@ -140,8 +139,8 @@ class TestArbDemux(unittest.TestCase):
 
         sel = Signal(intbv(0)[NUM_OUTPUTS:])
 
-        rst = ResetSignal(val=0, active=1, async=False)
-        clk = Signal(bool(0))
+        clk = sim.Clock(val=0, period=10, units="ns")
+        rst = sim.ResetSync(clk=clk, val=0, active=1)
 
         argl = {"rst":rst, "clk":clk,
                 "i_rdy":hsi[0], "i_vld":hsi[1],
@@ -156,7 +155,7 @@ class TestArbDemux(unittest.TestCase):
                 for i in range(NUM_OUTPUTS):
                     ls_hso_rdy[i].next = 0
                 hsi_vld.next = 0
-                yield rst.negedge
+                yield rst.pulse(10)
                 yield clk.posedge
                 for i in range(NUM_OUTPUTS):
                     assert 0==ls_hso_vld[i], "hso_vld[{}]: expected {}, detected {}".format(i, 0, ls_hso_vld[i])
@@ -203,11 +202,10 @@ class TestArbDemux(unittest.TestCase):
         for s in self.simulators:
             getDut.selectSimulator(s)
             dut=getDut(self.hs_arbdemux_top, **argl)
-            clkgen = sim.clock_generator(clk)
-            rstgen = sim.reset_generator(rst, clk, RST_LENGTH_CC=3)
+            clkgen = clk.gen()
             stm = stim()
-            Simulation(rstgen, clkgen, dut, stm).run()
-            del dut, stm
+            Simulation(clkgen, dut, stm).run()
+            del clkgen, dut, stm
 
 
 if __name__ == "__main__":

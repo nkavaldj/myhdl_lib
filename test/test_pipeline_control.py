@@ -12,9 +12,9 @@ class TestPipelineControl(unittest.TestCase):
         cls.simulators = ["myhdl", "icarus"]
 
     def setUp(self):
-        self.rst = ResetSignal(val=0, active=1, async=False)
-        self.clk = Signal(bool(0))
-        self.clkgen = sim.clock_generator(self.clk, PERIOD=10)
+        self.clk = sim.Clock(val=0, period=10, units="ns")
+        self.rst = sim.ResetSync(clk=self.clk, val=0, active=1)
+        self.clkgen = self.clk.gen()
 
         self.rx_rdy = Signal(bool(0))
         self.rx_vld = Signal(bool(0))
@@ -26,6 +26,7 @@ class TestPipelineControl(unittest.TestCase):
         pass
 
     def reset(self):
+        yield self.rst.pulse(10)
         self.rst.next = 1
         for _ in range (5): 
             yield self.clk.posedge 
