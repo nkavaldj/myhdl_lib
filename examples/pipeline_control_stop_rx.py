@@ -152,15 +152,14 @@ class Capture():
 def pipeline_control_stop_rx():
     ''' Instantiates the sequence4 pipeline, feeds it with data and drains its output '''
 
-    rst = ResetSignal(val=0, active=1, async=False)
-    clk = Signal(bool(0))
+    clk = sim.Clock(val=0, period=10, units="ns")
+    rst = sim.ResetSync(clk=clk, val=0, active=1)
 
     rx_rdy, rx_vld, tx_rdy, tx_vld = [Signal(bool(0)) for _ in range(4)]
     rx_dat = Signal(intbv(0)[8:])
     tx_dat = Signal(intbv(0)[10:])
 
-    clkgen = sim.clock_generator(clk, 10)
-    rstgen = sim.reset_generator(rst, clk)
+    clkgen = clk.gen()
     dut = sequence4(rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
 #     dut = traceSignals(sequence4, rst, clk, rx_rdy, rx_vld, rx_dat, tx_rdy, tx_vld, tx_dat)
     drv = Driver(rst, clk, rx_rdy, rx_vld, rx_dat)
@@ -173,6 +172,7 @@ def pipeline_control_stop_rx():
         ''' Stimulates the pipeline input '''
         @instance
         def _stim():
+            yield rst.pulse(10)
             yield clk.posedge
             for i in range(5):
                 yield drv.write(i)
@@ -198,7 +198,7 @@ def pipeline_control_stop_rx():
         return _drain
 
     # You can play with the gap size at the input and at the output to see how the pipeline responds (see time diagrams)
-    Simulation(rstgen, clkgen, dut, stim(GAP=0), drain(GAP=0)).run()
+    Simulation(clkgen, dut, stim(GAP=0), drain(GAP=0)).run()
 
     print "data_in ({}): {}".format(len(data_in), data_in)
     print "data_out ({}): {}".format(len(data_out), data_out)
