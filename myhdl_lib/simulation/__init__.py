@@ -1,6 +1,7 @@
 from _DUTer import DUTer
-from utils import clock_generator, reset_generator
+from clock import Clock
+from reset import ResetSync
 
 __all__ =["DUTer", 
-          "clock_generator",
-          "reset_generator"]
+          "Clock",
+          "ResetSync"]
