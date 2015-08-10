@@ -557,6 +557,145 @@ class TestFifo(unittest.TestCase):
                 Simulation(self.clkgen, dut, stm).run()
 
 
+    def testDataWidth1(self):
+        ''' FIFO: Data width 1'''
+        DEPTH = [1, 2, 4, 7, 8, 9, 10]
+        self.din = Signal(bool(0)) # <-- Bool
+        self.dout = Signal(bool(0)) # <-- Bool
+
+        def stim(DEPTH):
+            @instance
+            def _inst():
+                data_in = itertools.cycle(xrange(2))
+                data_out = itertools.cycle(xrange(2))
+
+                yield self.reset()
+                yield self.fifo_state_check(aFull=0, aEmpty=1, aCount=0, aCountMax=0, aOverflow=0, aUnderflow=0)
+
+                for _ in range(3):
+                    # Fill up to DEPTH-1
+                    do = data_out.next()
+                    for i in range(DEPTH-1):
+                        yield self.fifo_write(data_in.next())
+                        yield self.fifo_state_check(aFull=0, aEmpty=0, aDout=do, aCount=i+1, aOverflow=0, aUnderflow=0)
+                    # Fill up to DEPTH
+                    yield self.fifo_write(data_in.next())
+                    yield self.fifo_state_check(aFull=1, aEmpty=0, aDout=do, aCount=DEPTH, aCountMax=DEPTH, aOverflow=0, aUnderflow=0)
+                    # Drain down to 1
+                    for i in range(DEPTH-1):
+                        yield self.fifo_read()
+                        yield self.fifo_state_check(aFull=0, aEmpty=0, aDout=data_out.next(), aCount=DEPTH-i-1, aCountMax=DEPTH, aOverflow=0, aUnderflow=0)
+                    # Drain to 0
+                    yield self.fifo_read()
+                    yield self.fifo_state_check(aFull=0, aEmpty=1, aCount=0, aCountMax=DEPTH, aOverflow=0, aUnderflow=0)
+                    # Write, Read (to move the pointers one step further)
+                    yield self.fifo_write(data_in.next())
+                    yield self.fifo_read()
+                    data_out.next()
+
+                yield self.clk.posedge
+
+                raise StopSimulation
+            return _inst
+
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                dut = getDut( fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=self.din,
+                              empty=self.empty,
+                              re=self.re,
+                              dout=self.dout,
+                              afull=None,
+                              aempty=None,
+                              count=self.count,
+                              afull_th=None,
+                              aempty_th=None,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt,
+                              width=None
+                            )
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
+
+
+    def testDatawidth0(self):
+        ''' FIFO: Data width 0 '''
+        DEPTH = [1, 2, 4, 7, 8, 9, 10]
+
+        def stim(DEPTH):
+            @instance
+            def _inst():
+                data_in = itertools.cycle(xrange(2))
+                data_out = itertools.cycle(xrange(2))
+
+                yield self.reset()
+                yield self.fifo_state_check(aFull=0, aEmpty=1, aCount=0, aCountMax=0, aOverflow=0, aUnderflow=0)
+
+                for _ in range(3):
+                    # Fill up to DEPTH-1
+#                     do = data_out.next()
+                    for i in range(DEPTH-1):
+                        yield self.fifo_write(data_in.next())
+                        yield self.fifo_state_check(aFull=0, aEmpty=0, aDout=None, aCount=i+1, aOverflow=0, aUnderflow=0)
+                    # Fill up to DEPTH
+                    yield self.fifo_write(data_in.next())
+                    yield self.fifo_state_check(aFull=1, aEmpty=0, aDout=None, aCount=DEPTH, aCountMax=DEPTH, aOverflow=0, aUnderflow=0)
+                    # Drain down to 1
+                    for i in range(DEPTH-1):
+                        yield self.fifo_read()
+                        yield self.fifo_state_check(aFull=0, aEmpty=0, aDout=None, aCount=DEPTH-i-1, aCountMax=DEPTH, aOverflow=0, aUnderflow=0)
+                    # Drain to 0
+                    yield self.fifo_read()
+                    yield self.fifo_state_check(aFull=0, aEmpty=1, aCount=0, aCountMax=DEPTH, aOverflow=0, aUnderflow=0)
+                    # Write, Read (to move the pointers one step further)
+                    yield self.fifo_write(data_in.next())
+                    yield self.fifo_read()
+                    data_out.next()
+
+                yield self.clk.posedge
+
+                raise StopSimulation
+            return _inst
+
+        getDut = sim.DUTer()
+
+        for s in self.simulators:
+            getDut.selectSimulator(s)
+            for dpt in DEPTH:
+                dut = getDut( fifo,
+                              rst=self.rst,
+                              clk=self.clk,
+                              full=self.full,
+                              we=self.we,
+                              din=None, # <-- Not connected
+                              empty=self.empty,
+                              re=self.re,
+                              dout=None, # <-- Not connected
+                              afull=None,
+                              aempty=None,
+                              count=self.count,
+                              afull_th=None,
+                              aempty_th=None,
+                              ovf=self.ovf,
+                              udf=self.udf,
+                              count_max=self.count_max,
+                              depth=dpt,
+                              width=None
+                            )
+                stm = stim(dpt)
+                Simulation(self.clkgen, dut, stm).run()
+                del dut, stm
+
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testFifo']

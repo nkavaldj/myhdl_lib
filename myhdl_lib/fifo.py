@@ -8,6 +8,7 @@ def fifo(rst, clk, full, we, din, empty, re, dout, afull=None, aempty=None, aful
 
         Input  interface: full,  we, din
         Output interface: empty, re, dout
+            It s possible to set din and dout to None. Then the fifo width will be 0 and the fifo will contain no storage.
 
         Extra interface:
         afull     (o) - almost full flag, asserted when the number of empty cells <= afull_th
@@ -24,7 +25,9 @@ def fifo(rst, clk, full, we, din, empty, re, dout, afull=None, aempty=None, aful
     """
 
     if (width == None):
-        width = len(din)
+        width = 0
+        if din is not None:
+            width = len(din)
     if (depth == None):
         depth = 2
 
@@ -173,31 +176,31 @@ def fifo(rst, clk, full, we, din, empty, re, dout, afull=None, aempty=None, aful
                 if (re and empty_flg):
                     udf.next = 1
 
+    if width>0:
+        #===========================================================================
+        # Memory instance
+        #===========================================================================
+        mem_we      = Signal(bool(0))
+        mem_addrw   = Signal(intbv(0, min=0, max=depth))
+        mem_addrr   = Signal(intbv(0, min=0, max=depth))
+        mem_di      = Signal(intbv(0)[width:0])
+        mem_do      = Signal(intbv(0)[width:0])
 
-    #===========================================================================
-    # Memory instance
-    #===========================================================================
-    mem_we      = Signal(bool(0))
-    mem_addrw   = Signal(intbv(0, min=0, max=depth))
-    mem_addrr   = Signal(intbv(0, min=0, max=depth))
-    mem_di      = Signal(intbv(0)[width:0])
-    mem_do      = Signal(intbv(0)[width:0])
+        # RAM: Simple-Dual-Port, Asynchronous read
+        mem = ram_sdp_ar(   clk     = clk,
+                            we      = mem_we,
+                            addrw   = mem_addrw,
+                            addrr   = mem_addrr,
+                            di      = mem_di,
+                            do      = mem_do )
 
-    # RAM: Simple-Dual-Port, Asynchronous read
-    mem = ram_sdp_ar(   clk     = clk,
-                        we      = mem_we,
-                        addrw   = mem_addrw,
-                        addrr   = mem_addrr,
-                        di      = mem_di,
-                        do      = mem_do )
-
-    @always_comb
-    def mem_connect():
-        mem_we.next         = we_safe
-        mem_addrw.next      = wr_ptr
-        mem_addrr.next      = rd_ptr
-        mem_di.next         = din
-        dout.next           = mem_do
+        @always_comb
+        def mem_connect():
+            mem_we.next         = we_safe
+            mem_addrw.next      = wr_ptr
+            mem_addrr.next      = rd_ptr
+            mem_di.next         = din
+            dout.next           = mem_do
 
     return instances()
 
