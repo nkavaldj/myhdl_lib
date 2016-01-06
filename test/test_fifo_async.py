@@ -65,7 +65,7 @@ class TestFifoAsync(unittest.TestCase):
 
 
     def testEmptyFull(self):
-        ''' FIFO: Empty and Full, up and down'''
+        ''' FIFO_Async: Empty and Full, up and down'''
         DEPTH = [4, 8, 16]
 
         def stim(DEPTH):
@@ -131,7 +131,7 @@ class TestFifoAsync(unittest.TestCase):
 
 
     def testOverflowUnderflow(self):
-        ''' FIFO: Does not write when full, does not read when empty'''
+        ''' FIFO_Async: Does not write when full, does not read when empty'''
         DEPTH = [4, 8, 16]
 
         def stim(DEPTH):
@@ -204,7 +204,7 @@ class TestFifoAsync(unittest.TestCase):
 
 
     def testDataWidth1(self):
-        ''' FIFO: Data width 1'''
+        ''' FIFO_Async: Data width 1'''
         DEPTH = [4, 8, 16]
         self.wdata = Signal(bool(0)) # <-- Bool
         self.rdata = Signal(bool(0)) # <-- Bool
@@ -271,7 +271,7 @@ class TestFifoAsync(unittest.TestCase):
                 del dut, stm
 
     def testDatawidth0(self):
-        ''' FIFO: Data width 0 '''
+        ''' FIFO_Async: Data width 0 '''
         DEPTH = [4, 8, 16]
 
         def stim(DEPTH):
