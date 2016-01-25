@@ -27,10 +27,10 @@ from myhdl_lib.utils import assign
   transactions        ^     ^           ^                 ^     ^           ^                           
 
 
-    Simple interface used to synchronize module operation with the operation of other modules. 
+    Simple interface used to synchronize interactions/data transfers between modules. 
     Signals:
-        ready (or rdy) - in the current clock cycle destination is ready to receive
-        valid (or vld) - in the current clock cycle source is ready to transmit (has valid data)
+        ready (or rdy) - indicates that in the current clock cycle the destination module is ready to receive
+        valid (or vld) - indicates that in the current clock cycle the source module is ready to transmit (has valid data)
         data (or dat) - data to be transmitted
 
     - Signals "valid" and "ready" advertise *state* (as opposite to notifying about event)
@@ -48,7 +48,7 @@ from myhdl_lib.utils import assign
       and intuitive. Without the notion of direction both modules that need to synchronize their operation 
       become equal, and they drive the "ready" and "valid" signals to advertise their readiness. In that 
       sense both signals have meaning of "I_am_ready". From a point of view of a module, the signal driven 
-      by the module has meaning of "I_am_ready" and the signal received by the module has meaning of 
+      by the module has meaning of "I_am_ready" and the signal received from the other module has meaning of 
       "The_other_is_ready". Following that notion we can give the signals more intuitive local names like 
       "local_ready" and "foreign_ready", but this will solve the problem only on local level, level of a module,
       since the notion of local and foreign are relative - what is local for one module is foreign for the other 

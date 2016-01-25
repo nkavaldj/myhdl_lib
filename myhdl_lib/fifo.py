@@ -22,6 +22,11 @@ def fifo(rst, clk, full, we, din, empty, re, dout, afull=None, aempty=None, aful
         count_max (o) - max number of occupied fifo cells reached since the last reset
         ovf       (o) - overflow flag, set at the first write in a full fifo, cleared at reset
         udf       (o) - underflow flag, set at the first read from an empty fifo, cleared at reset
+
+        Parameters:
+        depth         - fifo depth, must be >= 1; if not set or set to `None` default value 2 is used
+        width         - data width in bits, must be >= 0; if not set or set to `None` the `din` width is used
+
     """
 
     if (width == None):

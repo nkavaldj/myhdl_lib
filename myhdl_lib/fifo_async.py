@@ -1,7 +1,7 @@
 from myhdl import *
 from mem   import ram_sdp_ar
 
-# def fifo_asynchronous(rst, clk, full, we, din, empty, re, dout, afull=None, aempty=None, afull_th=None, aempty_th=None, ovf=None, udf=None, count=None, count_max=None, depth=None, width=None):
+
 def fifo_async(wrst, rrst, wclk, rclk, wfull, we, wdata, rempty, re, rdata, depth=None, width=None):
     ''' Asynchronous FIFO
 
@@ -23,7 +23,7 @@ def fifo_async(wrst, rrst, wclk, rclk, wfull, we, wdata, rempty, re, rdata, dept
             re     - read enable
             rdata  - read data
         Parameters
-            depth - fifo depth. If not set, default 4 is used. Must be >=4. Must be power fo 2
+            depth - fifo depth. If not set, default 4 is used. Must be >=4. Must be power of 2
             width - data width. If not set, data with equals len(wdata). Can be [0,1,2,3...)
                     It is possible to instantiate a fifo with data width 0 (no data) if width=0 or width=None and wdata=None
     '''
