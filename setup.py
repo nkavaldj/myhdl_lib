@@ -7,8 +7,9 @@ def readme():
     with open('README.rst') as f:
         return f.read()
 
+
 setup( name                 = 'myhdl_lib',
-       version              = '0.13',
+       version              = '0.1',
        description          = 'TODO: Library of components based on Python and MyHDL',
        long_description     = readme(),
        classifiers          = [
@@ -26,9 +27,9 @@ setup( name                 = 'myhdl_lib',
            'myhdl_lib',
            'myhdl_lib.simulation'
        ],
-#       install_requires     = [
-#           'myhdl'
-#       ],
+       install_requires     = [
+           'myhdl'
+       ],
        include_package_data = True,
        zip_safe             = False
     )
