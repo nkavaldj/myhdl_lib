@@ -1,3 +1,5 @@
+__version__ = "0.1.0"
+
 from myhdl_lib.mem import rom, ram_sp_rf, ram_sp_wf, ram_sp_ar,ram_sdp_rf, ram_sdp_wf, ram_sdp_ar, ram_dp_rf, ram_dp_wf, ram_dp_ar
 from myhdl_lib.fifo import fifo
 from myhdl_lib.fifo_speculative import fifo_speculative

@@ -9,7 +9,7 @@ def readme():
 
 
 setup( name                 = 'myhdl_lib',
-       version              = '0.1',
+       version              = '0.1.0',
        description          = 'TODO: Library of components based on Python and MyHDL',
        long_description     = readme(),
        classifiers          = [
